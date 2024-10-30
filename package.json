@@ -1,0 +1,18 @@
+{
+  "name": "kolorado-optimal-designs",
+  "version": "0.0.1",
+  "type": "module",
+  "license": "UNLICENSED",
+  "description": "",
+  "keywords": [],
+  "repository": "https://github.com/pnoulis/kolorado-optimal-designs.git",
+  "homepage": "https://github.com/pnoulis/kolorado-optimal-designs#readme",
+  "bugs": "https://github.com/pnoulis/kolorado-optimal-designs/issues",
+  "author": "pavlos noulis <pavlos.noulis@gmail.com> (https://github.com/pnoulis)",
+  "exports": {},
+  "scripts": {},
+  "devDependencies": {},
+  "dependencies": {
+    "combinatorial-generators": "^1.1.2"
+  }
+}
