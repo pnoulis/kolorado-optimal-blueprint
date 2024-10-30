@@ -1,0 +1,9 @@
+* requirements
+** add new designs
+** persist designs on disk
+** find optimal design set
+** blueprint
+- id
+- triangles
+- squares
+- circles

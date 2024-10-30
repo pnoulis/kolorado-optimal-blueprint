@@ -2,7 +2,7 @@ function factorial(number) {
   return number > 1 ? number * factorial(--number) : 1;
 }
 
-function count_combinations(objects, arrangement) {
+export function count_combinations(objects, arrangement) {
   // C(n,r) -> n! / n! * (n-r)!
   return (
     factorial(objects) /
@@ -10,7 +10,7 @@ function count_combinations(objects, arrangement) {
   );
 }
 
-function count_permutations(objects, arrangement) {
+export function count_permutations(objects, arrangement) {
   // P(n,r) -> n! / (n-r)!
   return factorial(objects) / factorial(objects - arrangement);
 }

@@ -1,3 +1,5 @@
+// blueprint -> ( id: "ABC123", triangles, squares, circles )
+// shape
 // t, s, c = triangle, square, circle
 const designs = [
   {
