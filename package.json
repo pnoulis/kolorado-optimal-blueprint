@@ -5,6 +5,10 @@
   "type": "module",
   "license": "UNLICENSED",
   "description": "",
+  "engines": {
+    "npm": ">=10.9.0",
+    "node": ">=22.11.0"
+  },
   "keywords": [],
   "repository": "https://github.com/pnoulis/kolorado-optimal-blueprint.git",
   "homepage": "https://github.com/pnoulis/kolorado-optimal-blueprint#readme",
