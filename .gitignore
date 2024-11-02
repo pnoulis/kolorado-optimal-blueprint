@@ -3,3 +3,8 @@ package-lock.json
 node_modules
 cloud-storage
 
+# configure output
+config.env
+config.log
+config.macros.m4
+Makefile
