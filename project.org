@@ -7,3 +7,12 @@
 - triangles
 - squares
 - circles
+
+** expected information
+
+- count of each blueprint
+- total count of blueprints
+- count of each shape
+- total shapes_count
+- total remainder shapes_count
+- count of each shape remainder
