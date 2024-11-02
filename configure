@@ -1,0 +1,7 @@
+#!/bin/bash
+
+mode=development
+
+cd ./src/server && ./configure --mode $mode
+cd ../../
+cd ./src/website && ./configure --mode $mode
