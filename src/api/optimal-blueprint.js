@@ -33,7 +33,7 @@ function find_optimal_blueprints(shapes, blueprints, options = {}) {
   let optimal_blueprints_score = 0;
   let optimal_blueprints;
 
-  powerset_reverse(blueprints_tsc, (permutation, stop) => {
+  powerset_reverse(blueprints_tsc, (permutation, _break) => {
     permutation.shapes_count = calc_permutation_shapes_count(permutation);
 
     // Score the permutation.
@@ -71,7 +71,7 @@ function find_optimal_blueprints(shapes, blueprints, options = {}) {
       permutation.shapes_count < target_shapes_count ||
       permutation.score === 0
     )
-      stop();
+      _break();
   });
 
   return optimal_blueprints;
