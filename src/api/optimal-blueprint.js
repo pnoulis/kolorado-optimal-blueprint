@@ -8,13 +8,10 @@ import {
 import { debug } from "../../debug.js";
 
 function find_optimal_blueprints(shapes, blueprints, options = {}) {
-  // target
   const target_tsc = tsc(shapes);
   debug("target_tsc")(target_tsc);
   const target_shapes_count = squash_tsc(target_tsc);
   debug("target_shapes_count")(target_shapes_count);
-
-  // blueprints
   const [blueprints_tsc, blueprints_shapes_count] = match_target_shapes_count(
     target_shapes_count,
     blueprints,
@@ -25,30 +22,19 @@ function find_optimal_blueprints(shapes, blueprints, options = {}) {
   // better score. As such the algorithm should cease its operations
   // and return the result
   sort_tsc_increasing_shapes_count(blueprints_tsc);
-
-  debug("blueprints tsc")(blueprints_tsc);
-  const blueprints_cardinality = count_cardinality(blueprints_tsc);
-  debug("blueprints_cardinality")(blueprints_cardinality);
+  debug("blueprints_tsc")(blueprints_tsc);
   debug("blueprints_shapes_count")(blueprints_shapes_count);
-  const count_permutations = count_powerset_permutations(
-    count_cardinality(blueprints_tsc),
+  debug("blueprints_cardinality")(count_cardinality(blueprints_tsc));
+  debug("blueprints_permutations")(
+    count_powerset_permutations(count_cardinality(blueprints_tsc)),
   );
-  debug("count_permutations")(count_permutations);
 
   // optimal blueprints
   let optimal_blueprints_score = 0;
-  let optimal_blueprints = [];
+  let optimal_blueprints;
 
   powerset_reverse(blueprints_tsc, (permutation, stop) => {
     permutation.shapes_count = calc_permutation_shapes_count(permutation);
-
-    // To even consider a blueprint set as eligible, it must have
-    // the capacity to fulfill the target_shapes_count.
-    // Moreover, the first permutation that fails to pass this test
-    // signifies that, while no permutation with a score of 0 has
-    // been found, no other permutations will get a better score
-    // and thus the algorithm should terminate.
-    if (permutation.shapes_count < target_shapes_count) stop();
 
     // Score the permutation.
     // The lower the score the better.
@@ -62,25 +48,30 @@ function find_optimal_blueprints(shapes, blueprints, options = {}) {
       target_shapes_count,
     });
 
-    debug('permutation')(permutation);
+    debug("permutation")(permutation);
 
-    if (
+    if (permutation.score < 0) return; // Ignore negative scores
+    else if (
       optimal_blueprints_score === 0 ||
       permutation.score < optimal_blueprints_score
     ) {
       // first blueprint to pass the eligibility tests sets the bar
       // or a new best optimal blueprint was found
       optimal_blueprints_score = permutation.score;
-      optimal_blueprints.push(permutation);
+      optimal_blueprints = permutation;
     }
-
-    if (permutation.score === 0) stop();
-    // (permutation.score === optimal_blueprints_score)
+    // if (permutation.score === optimal_blueprints_score)
     // Under the assumption that order is not important, 2
     // permutations with the same score are considered duplicate
 
-    // A (permutation.score > optimal_blueprints_score)
+    // if (permutation.score > optimal_blueprints_score)
     // is sub-optimal relative to the current best optimal blueprint
+
+    if (
+      permutation.shapes_count < target_shapes_count ||
+      permutation.score === 0
+    )
+      stop();
   });
 
   return optimal_blueprints;
