@@ -2,6 +2,6 @@
 
 mode=development
 
-cd ./src/server && ./configure --mode $mode
+cd ./packages/server && ./configure --mode $mode
 cd ../../
-cd ./src/website && ./configure --mode $mode
+cd ./packages/website && ./configure --mode $mode

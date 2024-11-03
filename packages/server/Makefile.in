@@ -5,19 +5,32 @@
 ##################################################
 .DELETE_ON_ERROR:
 .SECONDEXPANSION:
-SHELL					 := IN_BASH
-.DEFAULT_GOAL	 := all
+SHELL							:= IN_BASH
+.DEFAULT_GOAL			:= all
 
 ##################################################
 # App description
 ##################################################
-pkg_name							= IN_PKG_NAME
-pkg_distname					= IN_PKG_DISTNAME
-pkg_version						= IN_PKG_VERSION
-pkg_vversion					= IN_PKG_VVERSION
-pkg_homepage					= IN_PKG_HOMEPAGE
-pkg_bugreport					= IN_PKG_BUGREPORT
-pkg_repository				= IN_PKG_REPOSITORY
+PKG_AUTHOR_NAME				= IN_PKG_AUTHOR_NAME
+PKG_AUTHOR_ID					= IN_PKG_AUTHOR_ID
+PKG_AUTHOR_EMAIL			= IN_PKG_AUTHOR_EMAIL
+PKG_AUTHOR_HOME_URL		= IN_PKG_AUTHOR_HOME_URL
+PKG_NAME							= IN_PKG_NAME
+PKG_ID								= IN_PKG_ID
+PKG_PRETTY_NAME				= IN_PKG_PRETTY_NAME
+PKG_TARNAME						= IN_PKG_TARNAME
+PKG_VERSION						= IN_PKG_VERSION
+PKG_VERSION_ID				= IN_PKG_VERSION_ID
+PKG_VERSION_CODENAME	= IN_PKG_VERSION_CODENAME
+PKG_REPOSITORY_TYPE		= IN_PKG_REPOSITORY_TYPE
+PKG_REPOSITORY_DOMAIN	= IN_PKG_REPOSITORY_DOMAIN
+PKG_REPONAME					= IN_PKG_REPONAME
+PKG_REPOSITORY_PATH		= IN_PKG_REPOSITORY_PATH
+PKG_REPOSITORY_URL		= IN_PKG_REPOSITORY_URL
+PKG_HOME_URL					= IN_PKG_HOME_URL
+PKG_DOCUMENTATION_URL	= IN_PKG_DOCUMENTATION_URL
+PKG_BUG_REPORT_url		= IN_PKG_BUG_REPORT_URL
+PKG_SUPPORT_URL				= IN_PKG_SUPPORT_URL
 
 ##################################################
 # Program name transformation
@@ -28,12 +41,12 @@ program_vname					= IN_PROGRAM_VNAME
 ##################################################
 # Build directories
 ##################################################
-buildir								= IN_BUILDIR
-buildir_abs						= IN_BUILDIR_ABS
-srcdir_top						= IN_SRCDIR
-srcdir_top_abs				= IN_SRCDIR_ABS
-srcdir								= $(srcdir_top)/src
-srcdir_abs						= $(srcdir_top_abs)/src
+BUILDIR								= IN_BUILDIR
+BUILDIR_ABS						= IN_BUILDIR_ABS
+SRCDIR_TOP						= IN_SRCDIR
+SRCDIR_TOP_ABS				= IN_SRCDIR_ABS
+SRCDIR								= $(SRCDIR_top)/src
+SRCDIR_ABS						= $(srcdir_top_abs)/src
 
 ##################################################
 # Installation directories
@@ -76,25 +89,21 @@ metainfodir						=	IN_METAINFODIR
 ##################################################
 # Tools
 ##################################################
-ssh										= IN_SSH
-scp										= IN_SCP
-chmod									= IN_CHMOD
-chown									= IN_CHOWN
-jq										= IN_JQ
-m4										= IN_M4
-cp										= IN_CP
-rm										= IN_RM
-cat										= IN_CAT
-crond									=	IN_CROND
-bumpve								= $(srcdir_top)/scripts/bumpve.sh
-release								= $(srcdir_top)/scripts/release.sh
+MAKE	= IN_MAKE
+M4		= IN_M4
+CHMOD	= IN_CHMOD
+CHOWN	= IN_CHOWN
+JQ		= IN_JQ
+M4		= IN_M4
+CP		= IN_CP
+RM		= IN_RM
+CAT		= IN_CAT
 
 ##################################################
 # Important files
 ##################################################
-macrosfile   = $(srcdir_top)/config.macros.m4
-configfile	 = $(srcdir_top)/configure
-releasefile	 = $(srcdir_top)/RELEASE
+MACROSFILE   = $(SRCDIR_top)/config.macros.m4
+CONFIGFILE	 = $(SRCDIR_top)/configure
 
 # Options
 

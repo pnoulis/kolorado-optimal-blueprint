@@ -3,7 +3,7 @@
 usage() {
     cat<<EOF
 NAME
-    ${0} - configure the ${PKG_NAME}
+    ${0} - build the server of the kolorado-optimal-blueprint project
 
 SYNOPSIS
     ${0} [...OPTIONS]
@@ -37,16 +37,28 @@ pre_config_env=$(mktemp)
 printenv > $pre_config_env
 post_config_env=$(mktemp)
 
-# App description
-export PKG_NAME=
-export PKG_DESCRIPTION=
-export PKG_LICENSE=
-export PKG_REPOSITORY=https://github.com/${USER}/${PKG_NAME}
-export PKG_VERSION=
-export PKG_VVERSION=v${PKG_VERSION}
-export PKG_DISTNAME=${PKG_NAME}-${PKG_VVERSION}
-export PKG_HOMEPAGE=https://github.com/${USER}/${PKG_NAME}
-export PKG_BUGREPORT=https://github.com/${USER}/${PKG_NAME}/issues
+# Author
+export PKG_AUTHOR_NAME="pavlos noulis"
+export PKG_AUTHOR_ID="pnoulis"
+export PKG_AUTHOR_EMAIL="pavlos.noulis@gmail.com"
+export PKG_AUTHOR_HOME_URL="https://github.com/pnoulis"
+# Package
+export PKG_NAME="server"
+export PKG_ID="server"
+export PKG_PRETTY_NAME="server"
+export PKG_VERSION="0.0.1"
+export PKG_VERSION_ID="0.0.1"
+export PKG_VERSION_CODENAME="server"
+export PKG_TARNAME="server-v0.0.1"
+export PKG_REPOSITORY_TYPE="git"
+export PKG_REPOSITORY_DOMAIN="github.com"
+export PKG_REPONAME="kolorado-optimal-blueprint"
+export PKG_REPOSITORY_PATH="pnoulis/kolorado-optimal-blueprint"
+export PKG_REPOSITORY_URL="https://github.com/pnoulis/kolorado-optimal-blueprint"
+export PKG_HOME_URL="https://github.com/pnoulis/kolorado-optimal-blueprint"
+export PKG_DOCUMENTATION_URL="https://github.com/pnoulis/kolorado-optimal-blueprint#readme"
+export PKG_BUG_REPORT_URL="https://github.com/pnoulis/kolorado-optimal-blueprint/issues"
+export PKG_SUPPORT_URL="https://github.com/pnoulis/kolorado-optimal-blueprint"
 
 # Options
 mode=production
@@ -70,6 +82,7 @@ main() {
 
 resolve_options() {
     print_chapter "Resolving options..."
+    echo "mode...|$mode"
 }
 resolve_buildir() {
     print_chapter "Resolving buildir..."
@@ -103,6 +116,33 @@ resolve_system() {
 
 resolve_dependencies() {
   print_chapter "Resolving dependencies..."
+
+  is_command_installed bash 5.1.16 ">="
+  declare -gx BASH=$command_path
+
+  is_command_installed make 4.3 ">="
+  declare -gx MAKE=$command_path
+
+  is_command_installed m4 1.4.19 ">="
+  declare -gx M4=$command_path
+
+  is_command_installed rm
+  declare -gx RM=$command_path
+
+  is_command_installed cp
+  declare -gx CP=$command_path
+
+  is_command_installed cat
+  declare -gx CAT=$command_path
+
+  is_command_installed chmod
+  declare -gx CHMOD=$command_path
+
+  is_command_installed chown
+  declare -gx CHOWN=$command_path
+
+  is_command_installed jq
+  declare -gx JQ=$command_path
 }
 
 define_installdirs() {
@@ -194,7 +234,7 @@ define_program_name() {
         PROGRAM_TRANSFORM_NAME="s&\$&$PROGRAM_SUFFIX&;$PROGRAM_TRANSFORM_NAME"
     fi
 
-    declare -gx PROGRAM_NAME="$(echo "$PKG_TARNAME" | sed "$PROGRAM_TRANSFORM_NAME")"
+    declare -gx PROGRAM_NAME="$(echo "$PKG_ID" | sed "$PROGRAM_TRANSFORM_NAME")"
     declare -gx PROGRAM_VNAME="${PROGRAM_NAME}-${PKG_VERSION}"
 
     echo "PROGRAM_NAME...|$PROGRAM_NAME"
@@ -234,12 +274,12 @@ create_macrosfile() {
   local unquoted_envars=$(TMPDIR= mktemp)
   diff --normal $pre_config_env $post_config_env | grep '^>' | cut -c3- | sort > $unquoted_envars
   rm -f $OUT_CONFIG_MACROSFILE
+  echo "changequote([[[, ]]])dnl" > $OUT_CONFIG_MACROSFILE
   while IFS='=' read -r key value; do
     cat <<EOF >> $OUT_CONFIG_MACROSFILE
-define(\`IN_$key', \`$value')dnl
+define([[[IN_$key]]], [[[$value]]])dnl
 EOF
   done < $unquoted_envars
-  echo "changequote(\`[[[', \`]]]')dnl" >> $OUT_CONFIG_MACROSFILE
 
   rm -f $unquoted_envars
   echo "OUT_CONFIG_MACROSFILE...|$OUT_CONFIG_MACROSFILE"
@@ -407,12 +447,12 @@ is_command_installed() {
         echo "$command" "installed version ->" "$version_installed"
     fi
 
-    echo "$command" "required version ->" "$logical_operator" "$version_required"
     if ! compare_versions "$version_installed" "$logical_operator" "$version_required"; then
-        echo "$command" "version in range ->" "false"
+        echo "$command" "matches version -> false"
+        version_in_range=false
         return 1
     else
-        echo "$command" "version in range ->" "true"
+        echo "$command" "matches version -> true"
         version_in_range=true
     fi
 }
