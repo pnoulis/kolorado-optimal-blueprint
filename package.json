@@ -14,5 +14,10 @@
     "node": ">=22.11.0"
   },
   "exports": {},
-  "scripts": {}
+  "scripts": {},
+  "workspaces": [
+    "packages/common",
+    "packages/server",
+    "packages/website"
+  ]
 }

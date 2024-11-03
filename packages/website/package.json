@@ -1,18 +1,28 @@
 {
   "name": "website",
   "version": "0.0.1",
+  "license": "UNLICENSED",
   "description": "website",
   "keywords": [],
-  "repository": "https://github.com/pnoulis/kolorado-optimal-blueprint.git",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pnoulis/kolorado-optimal-blueprint.git"
+  },
   "homepage": "https://github.com/pnoulis/kolorado-optimal-blueprint",
-  "bugs": "https://github.com/pnoulis/kolorado-optimal-blueprint/issues",
+  "bugs": {
+    "url": "https://github.com/pnoulis/kolorado-optimal-blueprint/issues"
+  },
   "author": "pavlos noulis <pavlos.noulis@gmail.com> (https://github.com/pnoulis)",
   "private": true,
   "type": "module",
-  "scripts": {},
   "engines": {
     "npm": ">=10.9.0",
     "node": ">=22.11.0"
   },
-  "exports": {}
+  "main": "./index.js",
+  "exports": {
+    ".": "./index.js"
+  },
+  "scripts": {},
+  "devDependencies": {}
 }
