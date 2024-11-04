@@ -106,6 +106,10 @@ MACROSFILE   = $(SRCDIR_top)/config.macros.m4
 CONFIGFILE	 = $(SRCDIR_top)/configure
 
 # Options
+MODE				= IN_MODE
+BASENAME		= IN_BASENAME
+PORT				= IN_PORT
+SERVER_URL	= IN_SERVER_URL
 
 ##################################################
 # Default target

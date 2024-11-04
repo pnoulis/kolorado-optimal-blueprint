@@ -61,7 +61,10 @@ export PKG_BUG_REPORT_URL="https://github.com/pnoulis/kolorado-optimal-blueprint
 export PKG_SUPPORT_URL="https://github.com/pnoulis/kolorado-optimal-blueprint"
 
 # Options
-mode=production
+export MODE=production
+export BASENAME='http://localhost'
+export PORT=3000
+export SERVER_URL=
 
 main() {
     parse_args "$@"
@@ -82,7 +85,10 @@ main() {
 
 resolve_options() {
     print_chapter "Resolving options..."
-    echo "mode...|$mode"
+    echo "mode...|$MODE"
+    echo "basename...|$BASENAME"
+    echo "port...|$PORT"
+    echo "server url...|$SERVER_URL"
 }
 resolve_buildir() {
     print_chapter "Resolving buildir..."
@@ -315,7 +321,19 @@ parse_args() {
         case "${1:-}" in
             --mode | --mode=*)
                 parse_param "$@" || shift $?
-                mode="$_param"
+                MODE="$_param"
+                ;;
+            --server-url | --server-url=*)
+                parse_param "$@" || shift $?
+                SERVER_URL="$_param"
+                ;;
+            --basename | --basename=*)
+                parse_param "$@" || shift $?
+                BASENAME="$_param"
+                ;;
+            --port | --port=*)
+                parse_param "$@" || shift $?
+                PORT="$_param"
                 ;;
             -h | --help)
                 usage

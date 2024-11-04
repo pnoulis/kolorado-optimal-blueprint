@@ -1,7 +1,24 @@
 #!/bin/bash
 
-mode=development
+# server options
+server_mode=development
+server_domain=http://localhost
+server_port=8080
+server_url=${server_domain}:${server_port}
 
-cd ./packages/server && ./configure --mode $mode
+# website options
+website_mode=development
+website_domain=http://localhost
+website_port=3000
+website_url=${website_domain}:${website_port}
+
+# Configure server
+cd ./packages/server
+./configure --mode=$server_mode --port=$server_port --basename=$server_domain
+
 cd ../../
-cd ./packages/website && ./configure --mode $mode
+
+# Configure website
+cd ./packages/website
+./configure --mode $website_mode --server-url=$server_url --port=$website_port \
+            --basename=$website_domain
