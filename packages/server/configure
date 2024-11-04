@@ -62,7 +62,7 @@ export PKG_SUPPORT_URL="https://github.com/pnoulis/kolorado-optimal-blueprint"
 
 # Options
 export MODE=production
-export BASENAME='http://localhost'
+export URL=http://localhost
 export PORT=8080
 
 main() {
@@ -85,8 +85,16 @@ main() {
 resolve_options() {
     print_chapter "Resolving options..."
     echo "mode...|$MODE"
-    echo "basename...|$BASENAME"
-    echo "port...|$PORT"
+
+    echo "url...|$URL"
+    parse_url "$URL" "URL" "$PORT"
+    echo "url_scheme...|$URL_SCHEME"
+    echo "url_user...|$URL_USER"
+    echo "url_pass...|$URL_PASS"
+    echo "url_hostname...|$URL_HOSTNAME"
+    echo "url_port...|$URL_PORT"
+    echo "url_path...|$URL_PATH"
+    echo "url_origin...|$URL_ORIGIN"
 }
 resolve_buildir() {
     print_chapter "Resolving buildir..."
@@ -321,9 +329,9 @@ parse_args() {
                 parse_param "$@" || shift $?
                 MODE="$_param"
                 ;;
-            --basename | --basename=*)
+            --url | --url=*)
                 parse_param "$@" || shift $?
-                BASENAME="$_param"
+                URL="$_param"
                 ;;
             --port | --port=*)
                 parse_param "$@" || shift $?
@@ -382,6 +390,55 @@ parse_param() {
 
     _param="${arg:-}"
     return $toshift
+}
+
+parse_url() {
+    # Shamelessly copied over from: https://gist.github.com/joshisa/297b0bc1ec0dcdda0d1625029711fa24
+    # With some own additions
+    url="$1"
+    prefix="$2"
+    _port="$3"
+
+    protocol=$(echo "$1" | grep "://" | sed -e's,^\(.*://\).*,\1,g')
+    # Remove the protocol
+    url_no_protocol=$(echo "${1/$protocol/}")
+    # Use tr: Make the protocol lower-case for easy string compare
+    protocol=$(echo "$protocol" | tr '[:upper:]' '[:lower:]')
+
+    # Extract the user and password (if any)
+    # cut 1: Remove the path part to prevent @ in the querystring from breaking the next cut
+    # rev: Reverse string so cut -f1 takes the (reversed) rightmost field, and -f2- is what we want
+    # cut 2: Remove the host:port
+    # rev: Undo the first rev above
+    userpass=$(echo "$url_no_protocol" | grep "@" | cut -d"/" -f1 | rev | cut -d"@" -f2- | rev)
+    pass=$(echo "$userpass" | grep ":" | cut -d":" -f2)
+    if [ -n "$pass" ]; then
+        user=$(echo "$userpass" | grep ":" | cut -d":" -f1)
+    else
+        user="$userpass"
+    fi
+
+    # Extract the host
+    hostport=$(echo "${url_no_protocol/$userpass@/}" | cut -d"/" -f1)
+    host=$(echo "$hostport" | cut -d":" -f1)
+    port=$(echo "$hostport" | grep ":" | cut -d":" -f2)
+    port=${port:-$_port}
+    path=$(echo "$url_no_protocol" | grep "/" | cut -d"/" -f2-)
+
+    # origin
+    origin="$protocol"
+    [[ "$user" != "" ]] && origin="${origin}${user}"
+    [[ "$pass" != "" ]] && origin="${origin}:${pass}"
+    [[ "$userpass" != "" ]] && oriign="${origin}@"
+    origin="${origin}${host}:${port}"
+
+    declare -gx ${prefix}_SCHEME="${protocol:-http}"
+    declare -gx ${prefix}_USER="$user"
+    declare -gx ${prefix}_PASS="$pass"
+    declare -gx ${prefix}_HOSTNAME="$host"
+    declare -gx ${prefix}_PORT="${port:-$PORT}"
+    declare -gx ${prefix}_PATH="${path:-/}"
+    declare -gx ${prefix}_ORIGIN="${origin}"
 }
 
 true() {

@@ -98,6 +98,7 @@ M4		= IN_M4
 CP		= IN_CP
 RM		= IN_RM
 CAT		= IN_CAT
+VITE  = npx vite
 
 ##################################################
 # Important files
@@ -107,14 +108,20 @@ CONFIGFILE	 = $(SRCDIR_top)/configure
 
 # Options
 MODE				= IN_MODE
-BASENAME		= IN_BASENAME
-PORT				= IN_PORT
+HOSTNAME		= IN_URL_HOSTNAME
+PORT				= IN_URL_PORT
+URL					= IN_URL_ORIGIN
+BASENAME		= IN_URL_PATH
 SERVER_URL	= IN_SERVER_URL
 
 ##################################################
 # Default target
 ##################################################
 all: build
+
+dev:
+	$(VITE) --strictPort --port "$(PORT)" \
+	--host "$(HOSTNAME)" --base "$(BASENAME)"
 
 ##################################################
 # Build
