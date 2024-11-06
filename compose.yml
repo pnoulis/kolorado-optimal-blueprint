@@ -1,0 +1,33 @@
+name: optimal-blueprint
+
+services:
+  website:
+    container_name: website
+    pull_policy: build
+    image: kolorado-optimal-blueprint/node
+    build: .
+    environment:
+      - PACKAGE=packages/website
+    env_file: "./packages/website/config.env"
+    ports:
+      - 3000:3000
+    volumes:
+      - type: bind
+        source: ./
+        target: /srv
+    depends_on:
+      - server
+  server:
+    container_name: server
+    pull_policy: build
+    image: kolorado-optimal-blueprint/node
+    build: .
+    environment:
+      - PACKAGE=packages/server
+    env_file: "./packages/server/config.env"
+    ports:
+      - 8080:8080
+    volumes:
+      - type: bind
+        source: ./
+        target: /srv

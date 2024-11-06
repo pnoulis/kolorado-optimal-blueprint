@@ -1,0 +1,9 @@
+.dockerignore
+npm-debug.log
+Dockerfile
+Dockerfile.*
+.git
+.gitignore
+config.*
+configure
+Makefile.in

@@ -45,8 +45,8 @@ BUILDIR								= IN_BUILDIR
 BUILDIR_ABS						= IN_BUILDIR_ABS
 SRCDIR_TOP						= IN_SRCDIR
 SRCDIR_TOP_ABS				= IN_SRCDIR_ABS
-SRCDIR								= $(SRCDIR_top)/src
-SRCDIR_ABS						= $(srcdir_top_abs)/src
+SRCDIR								= $(SRCDIR_TOP)/src
+SRCDIR_ABS						= $(SRCDIR_TOP_ABS)/src
 
 ##################################################
 # Installation directories
@@ -102,8 +102,9 @@ CAT		= IN_CAT
 ##################################################
 # Important files
 ##################################################
-MACROSFILE   = $(SRCDIR_top)/config.macros.m4
-CONFIGFILE	 = $(SRCDIR_top)/configure
+MACROSFILE  = $(SRCDIR_TOP)/config.macros.m4
+CONFIGFILE	= $(SRCDIR_TOP)/configure
+DOTENVFILES = $(SRCDIR_TOP)/config.env
 
 # Options
 MODE				= IN_MODE
@@ -111,6 +112,10 @@ HOSTNAME		= IN_URL_HOSTNAME
 PORT				= IN_URL_PORT
 URL					= IN_URL_ORIGIN
 BASENAME		= IN_URL_PATH
+
+# Misc
+colon = :
+loadenv=set -a; source $(DOTENVFILES)
 
 ##################################################
 # Default target
@@ -121,6 +126,9 @@ all: build
 # Build
 ##################################################
 build:
+
+dev:
+	$(loadenv) && node src/index.js
 
 ##################################################
 # Release
@@ -168,6 +176,8 @@ distclean: clean
 	-rm -f .#*
 	-rm -f config.*
 	-rm -f Makefile
+	-rm -f node_modules
+	-rm -f package-lock.json
 
 ##################################################
 # misc
@@ -187,6 +197,7 @@ help:
 
 # Software development
 .PHONY: run # Read dotenvfile and run $target or tmp/scratch.js
+.PHONY: dev # Develop application
 .PHONY: build # Build application
 .PHONY: test # Test application
 # Software distribution

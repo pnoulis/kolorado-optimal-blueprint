@@ -45,8 +45,8 @@ BUILDIR								= IN_BUILDIR
 BUILDIR_ABS						= IN_BUILDIR_ABS
 SRCDIR_TOP						= IN_SRCDIR
 SRCDIR_TOP_ABS				= IN_SRCDIR_ABS
-SRCDIR								= $(SRCDIR_top)/src
-SRCDIR_ABS						= $(srcdir_top_abs)/src
+SRCDIR								= $(SRCDIR_TOP)/src
+SRCDIR_ABS						= $(SRCDIR_TOP_ABS)/src
 
 ##################################################
 # Installation directories
@@ -103,8 +103,14 @@ VITE  = npx vite
 ##################################################
 # Important files
 ##################################################
-MACROSFILE   = $(SRCDIR_top)/config.macros.m4
-CONFIGFILE	 = $(SRCDIR_top)/configure
+MACROSFILE   = $(SRCDIR_TOP)/config.macros.m4
+CONFIGFILE	 = $(SRCDIR_TOP)/configure
+DOTENVFILES  = $(SRCDIR_TOP)/config.env
+
+##################################################
+# Misc
+##################################################
+colon = :
 
 # Options
 MODE				= IN_MODE
@@ -120,8 +126,8 @@ SERVER_URL	= IN_SERVER_URL
 all: build
 
 dev:
-	$(VITE) --strictPort --port "$(PORT)" \
-	--host "$(HOSTNAME)" --base "$(BASENAME)"
+	$(loadenv) && $(VITE) --strictPort --port "$(PORT)" \
+	--host 0.0.0.0 --base "$(BASENAME)"
 
 ##################################################
 # Build
@@ -174,6 +180,8 @@ distclean: clean
 	-rm -f .#*
 	-rm -f config.*
 	-rm -f Makefile
+	-rm -f node_modules
+	-rm -f package-lock.json
 
 ##################################################
 # misc
@@ -193,6 +201,7 @@ help:
 
 # Software development
 .PHONY: run # Read dotenvfile and run $target or tmp/scratch.js
+.PHONY: dev # Develop application
 .PHONY: build # Build application
 .PHONY: test # Test application
 # Software distribution
