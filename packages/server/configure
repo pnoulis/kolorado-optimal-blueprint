@@ -66,7 +66,6 @@ export URL=http://localhost
 export PORT=8080
 export BUILDIR_BASENAME=build
 export DISTDIR_BASENAME=dist
-export PUBLICDIR='${datadir}/${PKG_ID}/public'
 
 main() {
     parse_args "$@"
@@ -362,9 +361,16 @@ parse_args() {
                 parse_param "$@" || shift $?
                 DISTDIR_BASENAME="$_param"
                 ;;
+            --prefix | --prefix=*)
+                parse_param "$@" || shift $?
+                ;;
             --publicdir | --publicdir=*)
                 parse_param "$@" || shift $?
-                PUBLICDIR="$(realpath -e "$_param")"
+                export PUBLICDIR="$(realpath -e "$_param")"
+                ;;
+            --statedir | --statedir=*)
+                parse_param "$@" || shift $?
+                export STATEDIR="$(realpath -e "$_param")"
                 ;;
             -h | --help)
                 usage

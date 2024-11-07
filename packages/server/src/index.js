@@ -6,10 +6,12 @@ import { api } from "./api.js";
 
 const __dirname = Path.dirname(URL.fileURLToPath(import.meta.url));
 const PUBLICDIR = `${process.env.PUBLICDIR}`;
-const app = new express();
 
 debug("__dirname")(__dirname);
 debug("PUBLICDIR")(PUBLICDIR);
+
+const app = new express();
+
 app.use(express.static(PUBLICDIR));
 app.use("/api", api);
 app.listen(process.env.PORT, () => {
