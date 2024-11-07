@@ -137,7 +137,7 @@ SERVER_URL	= IN_SERVER_URL
 ##################################################
 # Default target
 ##################################################
-all: dotenv build
+all: build
 
 dev:
 	$(VITE) --strictPort --port "$(PORT)" \
