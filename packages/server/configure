@@ -66,6 +66,7 @@ export URL=http://localhost
 export PORT=8080
 export BUILDIR_BASENAME=build
 export DISTDIR_BASENAME=dist
+export PUBLICDIR='${datadir}/${PKG_ID}/public'
 
 main() {
     parse_args "$@"
@@ -107,6 +108,10 @@ resolve_options() {
     echo "server_url_port...|$URL_PORT"
     echo "server_url_path...|$URL_PATH"
     echo "server_url_origin...|$URL_ORIGIN"
+
+    echo "buildir...|$BUILDIR"
+    echo "distdir...|$DISTDIR"
+    echo "publicdir...|$PUBLICDIR"
 }
 resolve_buildir() {
     print_chapter "Resolving buildir..."
@@ -356,6 +361,10 @@ parse_args() {
             --distdir | --distdir=*)
                 parse_param "$@" || shift $?
                 DISTDIR_BASENAME="$_param"
+                ;;
+            --publicdir | --publicdir=*)
+                parse_param "$@" || shift $?
+                PUBLICDIR="$(realpath -e "$_param")"
                 ;;
             -h | --help)
                 usage

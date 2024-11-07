@@ -76,6 +76,7 @@ LOCKDIR						= IN_LOCKDIR
 DESKTOPDIR				= IN_DESKTOPDIR
 ICONDIR						= IN_ICONDIR
 METAINFODIR				=	IN_METAINFODIR
+PUBLICDIR         = IN_PUBLICDIR
 
 ##################################################
 # Tools
@@ -137,6 +138,9 @@ BASENAME		= IN_URL_PATH
 # Default target
 ##################################################
 all: build
+
+dev:
+	node src/index.js
 
 ##################################################
 # Build
