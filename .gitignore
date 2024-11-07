@@ -1,9 +1,15 @@
-*.log
-package-lock.json
-node_modules
 cloud-storage
 
 # configure output
 config.env
 config.log
 config.macros.m4
+
+# transient files
+tmp/
+build/
+dist/
+var/
+*.log
+package-lock.json
+node_modules
