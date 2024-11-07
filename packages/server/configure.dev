@@ -1,0 +1,9 @@
+#!/bin/bash
+
+mkdir -p ../../var/
+cp -u seed/* ../../var/
+
+./configure --mode=development \
+            --publicdir=../website/build \
+            --statedir=../../var
+
