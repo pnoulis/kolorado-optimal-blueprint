@@ -24,5 +24,7 @@
     ".": "./index.js"
   },
   "scripts": {},
-  "devDependencies": {}
+  "dependencies": {
+    "permute": "file:../../lib/permute"
+  }
 }
