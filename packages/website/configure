@@ -62,9 +62,12 @@ export PKG_SUPPORT_URL="https://github.com/pnoulis/kolorado-optimal-blueprint"
 
 # Options
 export MODE=production
+export NODE_ENV=$MODE
 export URL=http://localhost
 export PORT=3000
 export SERVER_URL=
+export BUILDIR_BASENAME=build
+export DISTDIR_BASENAME=dist
 
 main() {
     parse_args "$@"
@@ -173,7 +176,7 @@ define_installdirs() {
 
     ## GNU standard installation directory variables
     ## https://www.gnu.org/prep/standards/html_node/Directory-Variables.html
-    false PREFIX && declare -gx PREFIX="${prefix:-/usr/local}"
+    false PREFIX && declare -gx PREFIX='${prefix:-/usr/local}'
     false EXEC_PREFIX && declare -gx EXEC_PREFIX='${prefix}'
     false BINDIR && declare -gx BINDIR='${exec_prefix}/bin'
     false SBINDIR && declare -gx SBINDIR='${exec_prefix}/sbin'
@@ -223,7 +226,7 @@ define_installdirs() {
 define_derived_installdirs() {
     print_chapter "Defining derived installation directory variables..."
 
-    false TMPDIR && declare -gx 'TMPDIR=${TMPDIR:-/tmp}'
+    false TMPDIR && declare -gx TMPDIR="${TMPDIR:-/tmp}"
     false TMPDIR_PERSISTENT && declare -gx TMPDIR_PERSISTENT='/var/tmp'
     false STATEDIR && declare -gx STATEDIR='${localstatedir}/lib/${program_name}'
     false CACHEDIR && declare -gx CACHEDIR='${localstatedir}/cache/${program_name}'
@@ -351,6 +354,14 @@ parse_args() {
             --server-url | --server-url=*)
                 parse_param "$@" || shift $?
                 SERVER_URL="$_param"
+                ;;
+            --buildir | --buildir=*)
+                parse_param "$@" || shift $?
+                BUILDIR_BASENAME="$_param"
+                ;;
+            --distdir | --distdir=*)
+                parse_param "$@" || shift $?
+                DISTDIR_BASENAME="$_param"
                 ;;
             -h | --help)
                 usage

@@ -9,4 +9,9 @@ export default defineConfig({
     host: "0.0.0.0",
     port: process.env.PORT,
   },
+  build: {
+    outDir: process.env.BUILDIR,
+    target: "esnext",
+    minify: "esbuild",
+  },
 });

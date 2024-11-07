@@ -5,6 +5,7 @@
 ##################################################
 .DELETE_ON_ERROR:
 .SECONDEXPANSION:
+.EXPORT_ALL_VARIABLES:
 SHELL							:= IN_BASH
 .DEFAULT_GOAL			:= all
 
@@ -35,56 +36,46 @@ PKG_SUPPORT_URL				= IN_PKG_SUPPORT_URL
 ##################################################
 # Program name transformation
 ##################################################
-program_name					= IN_PROGRAM_NAME
-program_vname					= IN_PROGRAM_VNAME
-
-##################################################
-# Build directories
-##################################################
-BUILDIR								= IN_BUILDIR
-BUILDIR_ABS						= IN_BUILDIR_ABS
-SRCDIR_TOP						= IN_SRCDIR
-SRCDIR_TOP_ABS				= IN_SRCDIR_ABS
-SRCDIR								= $(SRCDIR_TOP)/src
-SRCDIR_ABS						= $(SRCDIR_TOP_ABS)/src
+export program_name					= IN_PROGRAM_NAME
+export program_vname					= IN_PROGRAM_VNAME
 
 ##################################################
 # Installation directories
 ##################################################
 # gnu prefix directories
-prefix								= IN_PREFIX
-exec_prefix						= IN_EXEC_PREFIX
-bindir								= IN_BINDIR
-sbindir								= IN_SBINDIR
-libexecdir						= IN_LIBEXECDIR
-datarootdir						= IN_DATAROOTDIR
-datadir								= IN_DATADIR
-sysconfdir						= IN_SYSCONFDIR
-sharedstatedir				= IN_SHAREDSTATEDIR
-localstatedir					= IN_LOCALSTATEDIR
-runstatedir						= IN_RUNSTATEDIR
-includedir						= IN_INCLUDEDIR
-oldincludedir					= IN_OLDINCLUDEDIR
-docdir								= IN_DOCDIR
-infodir								= IN_INFODIR
-htmldir								= IN_HTMLDIR
-dvidir								= IN_DVIDIR
-pdfdir								= IN_PDFDIR
-psdir									= IN_PSDIR
-libdir								= IN_LIBDIR
-localedir							= IN_LOCALEDIR
-mandir								= IN_MANDIR
+PREFIX						= IN_PREFIX
+EXEC_PREFIX				= IN_EXEC_PREFIX
+BINDIR						= IN_BINDIR
+SBINDIR						= IN_SBINDIR
+LIBEXECDIR				= IN_LIBEXECDIR
+DATAROOTDIR				= IN_DATAROOTDIR
+DATADIR						= IN_DATADIR
+SYSCONFDIR				= IN_SYSCONFDIR
+SHAREDSTATEDIR		= IN_SHAREDSTATEDIR
+LOCALSTATEDIR			= IN_LOCALSTATEDIR
+RUNSTATEDIR				= IN_RUNSTATEDIR
+INCLUDEDIR				= IN_INCLUDEDIR
+OLDINCLUDEDIR			= IN_OLDINCLUDEDIR
+DOCDIR						= IN_DOCDIR
+INFODIR						= IN_INFODIR
+HTMLDIR						= IN_HTMLDIR
+DVIDIR						= IN_DVIDIR
+PDFDIR						= IN_PDFDIR
+PSDIR							= IN_PSDIR
+LIBDIR						= IN_LIBDIR
+LOCALEDIR					= IN_LOCALEDIR
+MANDIR						= IN_MANDIR
 # Derived directories
-tmpdir								= IN_TMPDIR
-tmpdir_persistent			= IN_TMPDIR_PERSISTENT
-statedir							= IN_STATEDIR
-cachedir							= IN_CACHEDIR
-logdir								= IN_LOGDIR
-spooldir							= IN_SPOOLDIR
-lockdir								= IN_LOCKDIR
-desktopdir						= IN_DESKTOPDIR
-icondir								= IN_ICONDIR
-metainfodir						=	IN_METAINFODIR
+TMPDIR						= IN_TMPDIR
+TMPDIR_PERSISTENT	= IN_TMPDIR_PERSISTENT
+STATEDIR					= IN_STATEDIR
+CACHEDIR					= IN_CACHEDIR
+LOGDIR						= IN_LOGDIR
+SPOOLDIR					= IN_SPOOLDIR
+LOCKDIR						= IN_LOCKDIR
+DESKTOPDIR				= IN_DESKTOPDIR
+ICONDIR						= IN_ICONDIR
+METAINFODIR				=	IN_METAINFODIR
 
 ##################################################
 # Tools
@@ -101,16 +92,39 @@ CAT		= IN_CAT
 VITE  = npx vite
 
 ##################################################
-# Important files
+# input directories
 ##################################################
-MACROSFILE   = $(SRCDIR_TOP)/config.macros.m4
-CONFIGFILE	 = $(SRCDIR_TOP)/configure
-DOTENVFILES  = $(SRCDIR_TOP)/config.env
+SRCDIR_TOP			= IN_SRCDIR
+SRCDIR_TOP_ABS	= IN_SRCDIR_ABS
+SRCDIR					= $(SRCDIR_TOP)/src
+SRCDIR_ABS			= $(SRCDIR_TOP_ABS)/src
+
+##################################################
+# input files
+##################################################
+MACROSFILE		= $(BUILDIR_TOP)/config.macros.m4
+CONFIGFILE		= $(BUILDIR_TOP)/configure
+CONFIGENVFILE = $(BUILDIR_TOP)/config.env
+
+##################################################
+# output directories
+##################################################
+BUILDIR_TOP			= IN_BUILDIR
+BUILDIR_TOP_ABS	= IN_BUILDIR_ABS
+BUILDIR					= $(BUILDIR_TOP)/IN_BUILDIR_BASENAME
+BUILDIR_ABS			= $(BUILDIR_TOP_ABS)/IN_BUILDIR_BASENAME
+DISTDIR					= $(BUILDIR_TOP)/IN_DISTDIR_BASENAME
+DISTDIR_ABS			= $(BUILDIR_TOP_ABS)/IN_DISTDIR_BASENAME
+
+##################################################
+# output files
+##################################################
 
 ##################################################
 # Misc
 ##################################################
 colon = :
+VPATH = tmp src
 
 # Options
 MODE				= IN_MODE
@@ -123,22 +137,25 @@ SERVER_URL	= IN_SERVER_URL
 ##################################################
 # Default target
 ##################################################
-all: build
+all: dotenv build
 
 dev:
-	$(loadenv) && $(VITE) --strictPort --port "$(PORT)" \
+	$(VITE) --strictPort --port "$(PORT)" \
 	--host 0.0.0.0 --base "$(BASENAME)"
 
 ##################################################
 # Build
 ##################################################
 build:
+ifeq ($(MODE), production)
+	npm install --workspaces false
+endif
+	$(VITE) build
 
 ##################################################
 # Release
 ##################################################
 release:
-	$(release)
 
 ##################################################
 # Distribute
@@ -150,7 +167,15 @@ dist: dist.$$(archive)
 # Package
 ##################################################
 package: archive?=zip
-package: package.$$(archive)
+package: $(DISTDIR)/$(PKG_TARNAME).$$(archive)
+
+$(DISTDIR)/$(PKG_TARNAME).zip: $(DISTDIR)/$(PKG_TARNAME)
+	cd $(DISTDIR); zip -r $(PKG_TARNAME).zip $(PKG_TARNAME)
+
+$(DISTDIR)/$(PKG_TARNAME): build
+	mkdir -p $@
+	$(CP) -r $(BUILDIR)/ $@/
+	$(CP) -r Dockerfile.prod $@/Dockerfile
 
 ##################################################
 # Install
@@ -171,6 +196,8 @@ update:
 # clean
 ##################################################
 clean:
+	-if realpath -e --relative-to=$(SRCDIR_TOP_ABS) $(DISTDIR) 2>/dev/null; then $(RM) -fr $(DISTDIR); fi
+	-if realpath -e --relative-to=$(SRCDIR_TOP_ABS) $(BUILDIR) 2>/dev/null; then $(RM) -fr $(BUILDIR); fi
 
 ##################################################
 # distclean
@@ -180,14 +207,19 @@ distclean: clean
 	-rm -f .#*
 	-rm -f config.*
 	-rm -f Makefile
-	-rm -f node_modules
+	-rm -fr node_modules
 	-rm -f package-lock.json
+
+.PHONY: scratch
+scratch:
+	node tmp/scratch.js
 
 ##################################################
 # misc
 ##################################################
 .DEFAULT:
 	@if [ ! -f "$<" ]; then echo "Missing file -> $${file:-$<}"; exit 1; fi
+
 
 ##################################################
 # directories
