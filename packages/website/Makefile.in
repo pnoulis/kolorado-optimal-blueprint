@@ -80,16 +80,17 @@ METAINFODIR				=	IN_METAINFODIR
 ##################################################
 # Tools
 ##################################################
-MAKE	= IN_MAKE
-M4		= IN_M4
-CHMOD	= IN_CHMOD
-CHOWN	= IN_CHOWN
-JQ		= IN_JQ
-M4		= IN_M4
-CP		= IN_CP
-RM		= IN_RM
-CAT		= IN_CAT
-EJS		= npx ejs
+MAKE		= IN_MAKE
+M4			= IN_M4
+CHMOD		= IN_CHMOD
+CHOWN		= IN_CHOWN
+JQ			= IN_JQ
+M4			= IN_M4
+CP			= IN_CP
+RM			= IN_RM
+CAT			= IN_CAT
+EJS			= npx ejs
+ESBUILD = npx esbuild
 
 ##################################################
 # input directories
@@ -143,12 +144,13 @@ all: build
 # Build
 ##################################################
 build:
-	rm -fr $(BUILDIR) 2>/dev/null
+	$(RM) -fr $(BUILDIR) 2>/dev/null
 	mkdir -p $(BUILDIR)
 	$(CP) $(SRCDIR_TOP)/public/* $(BUILDIR)/
-	$(EJS) --rm-whitespace src/blueprints.ejs -f ../server/seed/blueprints.json > $(BUILDIR)/blueprints.html
-	$(EJS) --rm-whitespace src/shapes.ejs -f ../server/seed/shapes.json > $(BUILDIR)/shapes.html
-	$(EJS) --rm-whitespace src/home.ejs > $(BUILDIR)/index.html
+	$(EJS) --rm-whitespace $(SRCDIR)/blueprints.ejs -f ../server/seed/blueprints.json > $(BUILDIR)/blueprints.html
+	$(EJS) --rm-whitespace $(SRCDIR)/shapes.ejs -f ../server/seed/shapes.json > $(BUILDIR)/shapes.html
+	$(EJS) --rm-whitespace $(SRCDIR)/home.ejs > $(BUILDIR)/index.html
+	$(ESBUILD) --bundle --target=esnext $(SRCDIR)/main.js > $(BUILDIR)/main.js
 
 ##################################################
 # Release
