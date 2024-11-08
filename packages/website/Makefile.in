@@ -89,7 +89,7 @@ M4		= IN_M4
 CP		= IN_CP
 RM		= IN_RM
 CAT		= IN_CAT
-VITE  = npx vite
+EJS		= npx ejs
 
 ##################################################
 # input directories
@@ -139,18 +139,16 @@ SERVER_URL	= IN_SERVER_URL
 ##################################################
 all: build
 
-dev:
-	$(VITE) --strictPort --port "$(PORT)" \
-	--host 0.0.0.0 --base "$(BASENAME)"
-
 ##################################################
 # Build
 ##################################################
 build:
-ifeq ($(MODE), production)
-	npm install --workspaces false
-endif
-	$(VITE) build
+	rm -fr $(BUILDIR) 2>/dev/null
+	mkdir -p $(BUILDIR)
+	$(CP) $(SRCDIR_TOP)/public/* $(BUILDIR)/
+	$(EJS) --rm-whitespace src/blueprints.ejs -f ../server/seed/blueprints.json > $(BUILDIR)/blueprints.html
+	$(EJS) --rm-whitespace src/shapes.ejs -f ../server/seed/shapes.json > $(BUILDIR)/shapes.html
+	$(EJS) --rm-whitespace src/home.ejs > $(BUILDIR)/index.html
 
 ##################################################
 # Release

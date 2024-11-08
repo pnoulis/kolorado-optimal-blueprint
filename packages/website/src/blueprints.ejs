@@ -1,0 +1,44 @@
+<%- include('./head.ejs')-%>
+
+<body>
+    <%- include('./header.ejs')-%>
+    <main>
+        <header>
+            <h3>blueprints</h3>
+        </header>
+        <form>
+            <% for (let i = 0; i < blueprints.length; i++) { %>
+            <fieldset class="blueprint" id="blueprint-<%= blueprints[i].id %>">
+                <label for="blueprint-<%= blueprints[i].id %>-checkbox">
+                    <%= i %>
+                    <input type="checkbox" id="blueprint-<%= blueprints[i].id %>-checkbox" />
+                </label>
+                <label for="blueprint-<%= blueprints[i].id %>-name">
+                    <%= blueprints[i].name %>
+                    <input type="text" id="blueprint-<%= blueprints[i].id %>-name" value="<%= blueprints[i].name %>" disabled />
+                </label>
+                <label for="blueprint-<%= blueprints[i].id %>-shapes-count">
+                    <%= blueprints[i].count%>
+                    <input type="text" id="blueprint-<%= blueprints[i].id %>-shapes-count" disabled />
+                </label>
+                <menu class="blueprint-toolbar">
+                    <button type="button" class="blueprint-edit">edit</button>
+                    <button type="button" class="blueprint-shapes-add">delete</button>
+                </menu>
+                <strong class="blueprint-state <%= Object.keys(states).at(blueprints.state) %>">
+                    <%= Object.keys(states).at(blueprints.state) %>
+                </strong>
+                <ul class="blueprint-shapes">
+                    <% for (const shape of Object.entries(blueprints[i].shapes)) { %>
+                    <li class="blueprint-shape">
+                        <label for="blueprint-shape-<%= shape[0] %>"><%= shapes[shape[0]].name %></label>
+                        <input id="blueprint-shape-<%= shape[0] %>" type="number" value="<%= shape[1] %>" />
+                    </li>
+                    <% } %>
+                </ul>
+            </fieldset>
+            <% } %>
+        </form>
+    </main>
+    <%- include('./footer.ejs')-%>
+</body>

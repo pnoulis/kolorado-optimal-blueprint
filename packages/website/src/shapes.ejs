@@ -1,0 +1,25 @@
+<%- include('./head.ejs')-%>
+
+<body>
+    <%- include('./header.ejs')-%>
+    <main>
+        <h3>shapes</h3>
+        <form>
+            <% for (let i = 0; i < shapes.length; i++) { %>
+            <fieldset class="shape" id="shape-<%= shapes[i].id %>">
+                <label for="shape-<%= shapes[i].id %>-checkbox"><%= i %></label>
+                <input type="checkbox" id="shape-<%= shapes[i].id %>-checkbox" />
+                <label for="shape-<%= shapes[i].id %>-name">name</label>
+                <input type="text" id="shape-<%= shapes[i].id %>-name" value="<%= shapes[i].name %>" />
+                <menu class="shape-toolbar">
+                    <button class="shape-edit" type="button">edit</button>
+                </menu>
+                <strong class="shape-state <%= Object.keys(states).at(shapes.state) %>">
+                    <%= Object.keys(states).at(shapes.state) %>
+                </strong>
+            </fieldset>
+            <% } %>
+        </form>
+    </main>
+    <%- include('./footer.ejs')-%>
+</body>
