@@ -22,8 +22,8 @@
                     <input type="text" id="blueprint-<%= blueprints[i].id %>-shapes-count" disabled />
                 </label>
                 <menu class="blueprint-toolbar">
-                    <button type="button" class="blueprint-edit">edit</button>
-                    <button type="button" class="blueprint-shapes-add">delete</button>
+                    <li><button type="button" class="blueprint-edit">edit</button></li>
+                    <li><button type="button" class="blueprint-shapes-add">delete</button></li>
                 </menu>
                 <strong class="blueprint-state <%= Object.keys(states).at(blueprints.state) %>">
                     <%= Object.keys(states).at(blueprints.state) %>

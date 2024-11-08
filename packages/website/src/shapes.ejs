@@ -4,15 +4,25 @@
     <%- include('./header.ejs')-%>
     <main>
         <h3>shapes</h3>
-        <form>
+        <menu class="shapes-toolbar">
+            <li><button type="button" class="shapes-add">add</button> </li>
+        </menu>
+        <form name="shape-add" method="post">
+            <label for="shape-name"><input type="text" id="shape-name" /></label>
+        </form>
+        <form name="shapes-edit" method="put">
             <% for (let i = 0; i < shapes.length; i++) { %>
             <fieldset class="shape" id="shape-<%= shapes[i].id %>">
-                <label for="shape-<%= shapes[i].id %>-checkbox"><%= i %></label>
-                <input type="checkbox" id="shape-<%= shapes[i].id %>-checkbox" />
-                <label for="shape-<%= shapes[i].id %>-name">name</label>
-                <input type="text" id="shape-<%= shapes[i].id %>-name" value="<%= shapes[i].name %>" />
+                <label for="shape-<%= shapes[i].id %>-checkbox">
+                    <%= i %>
+                    <input type="checkbox" id="shape-<%= shapes[i].id %>-checkbox" />
+                </label>
+                <label for="shape-<%= shapes[i].id %>-name">
+                    <%= name %>
+                    <input type="text" id="shape-<%= shapes[i].id %>-name" value="<%= shapes[i].name %>" />
+                </label>
                 <menu class="shape-toolbar">
-                    <button class="shape-edit" type="button">edit</button>
+                    <li><button class="shape-edit" type="button">edit</button></li>
                 </menu>
                 <strong class="shape-state <%= Object.keys(states).at(shapes.state) %>">
                     <%= Object.keys(states).at(shapes.state) %>
