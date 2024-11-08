@@ -12,6 +12,14 @@ debug("PUBLICDIR")(PUBLICDIR);
 
 const app = new express();
 
+app.use("/blueprints", (req, res) => {
+  debug("blueprints->")(Path.join(PUBLICDIR, "blueprints.html"));
+  res.sendFile(Path.join(PUBLICDIR, "blueprints.html"));
+});
+app.use("/shapes", (req, res) => {
+  debug("shapes->")(Path.join(PUBLICDIR, "shapes.html"));
+  res.sendFile(Path.join(PUBLICDIR, "shapes.html"));
+});
 app.use(express.static(PUBLICDIR));
 app.use("/api", api);
 app.listen(process.env.PORT, () => {

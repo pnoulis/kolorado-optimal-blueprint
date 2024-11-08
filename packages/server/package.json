@@ -19,10 +19,6 @@
     "npm": ">=10.9.0",
     "node": ">=22.11.0"
   },
-  "main": "./index.js",
-  "exports": {
-    ".": "./index.js"
-  },
   "scripts": {},
   "dependencies": {
     "express": "4.21.1",
