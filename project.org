@@ -16,3 +16,23 @@
 - total shapes_count
 - total remainder shapes_count
 - count of each shape remainder
+
+* UI sketches
+** blueprints
+
+checkbox name toolbar state
+  blueprint blueprint blueprint
+
+where toolbar = 2 icons
+edit add_blueprint
+
+** shapes
+
+checkbox name toolbar state
+
+** state
+
+valid = blue circle
+invalid = orange/red circle
+deleted = grey/black circle
+
