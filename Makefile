@@ -8,6 +8,9 @@ all:
 
 colon = :
 
+dev:
+	cd packages/website; ./configure --mode=development; make build
+	cd packages/server; ./configure.dev; make dev
 
 docker: docker-run-server docker-run-website
 
