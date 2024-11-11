@@ -1,6 +1,6 @@
 import { debug } from "../../common/index.js";
 const SERVER_URL = "http://localhost:8080";
-const REQUEST_TIMEOUT = 3000; // 15 seconds
+const REQUEST_TIMEOUT = 15000; // 15 seconds
 
 /**
  * If you want to allow multipart/form-data bodies
@@ -50,24 +50,21 @@ function startAbortCountdown() {
 }
 
 async function parseResponse(res) {
-  const contentType = res.headers
-    .get("content-type")
-    .split(";")[0]
-    .split("/")[1];
-  const status = res.status;
-  const statusText = res.statusText;
-  const url = res.url;
+  const type = res.headers.get("content-type").split(";")[0].split("/")[1];
+  const body = await (type === "json" ? res.json() : res.text());
+  if (res.status >= 200 && res.status < 300) return body;
+  throw new Error(res.statusText, { cause: { res, type, body } });
+}
 
-  const body = await (contentType === "json" ? res.json() : res.text());
-
-  debug("contentType")(contentType);
-  debug("httpStatusCode")(status);
-  debug("httpStatusText")(statusText);
-  debug("url")(url);
-
-  if (status >= 200 && status < 300) return body;
-  document.write(body);
-  return res;
+async function handleError(err) {
+  const type = err.cause?.type;
+  switch (type) {
+    case "html":
+      document.write(err.cause.body);
+      break;
+    default:
+      console.error(err);
+  }
 }
 
 const http = {
@@ -79,7 +76,9 @@ const http = {
         Accept: "*/*",
       },
       signal: startAbortCountdown(),
-    }).then(parseResponse);
+    })
+      .then(parseResponse)
+      .catch(handleError);
   },
   post(url, { params, query, json, form } = {}) {
     return fetch(makeUrl(url, params, query), {
@@ -90,7 +89,9 @@ const http = {
       },
       signal: startAbortCountdown(),
       body: makeBody(json, form),
-    }).then(parseResponse);
+    })
+      .then(parseResponse)
+      .catch(handleError);
   },
   put(url, { params, query, json, form } = {}) {
     return fetch(makeUrl(url, params, query), {
@@ -101,7 +102,9 @@ const http = {
       },
       signal: startAbortCountdown(),
       body: makeBody(json, form),
-    }).then(parseResponse);
+    })
+      .then(parseResponse)
+      .catch(handleError);
   },
   delete(url, { params, query, json, form } = {}) {
     return fetch(makeUrl(url, params, query), {
@@ -112,7 +115,9 @@ const http = {
       },
       signal: startAbortCountdown(),
       body: makeBody(json, form),
-    }).then(parseResponse);
+    })
+      .then(parseResponse)
+      .catch(handleError);
   },
 };
 

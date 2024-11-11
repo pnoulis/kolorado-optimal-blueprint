@@ -69,10 +69,4 @@ function handleSubmitEdit(className, e) {
 }
 function handleSubmitCreate(className, e) {
   debug()(`[EVENT:SUBMIT_CREATE:${className}]`);
-  // http.get("health").then(debug());
-  http
-    .get("health/redirect", { query: { status: 404 } })
-    .then(debug())
-    .catch(debug());
-  // http.put("health", { json: { name: "yolo" } }).then(debug());
 }
