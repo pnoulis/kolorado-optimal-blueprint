@@ -4,8 +4,8 @@ import { join } from "node:path";
 import bodyParser from "body-parser";
 import { api } from "./api.js";
 import { health } from "./health.js";
-import { logTransaction } from "./log.js";
-import { notFoundError, internalServerError } from "./errors.js";
+import { logTransaction } from "./middleware/log.js";
+import { notFoundError, internalServerError } from "./middleware/errors.js";
 
 const app = new express();
 
