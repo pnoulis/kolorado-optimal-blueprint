@@ -31,7 +31,8 @@ function makeContentType(query, json, form) {
     : json
       ? "application/json"
       : form
-        ? "multipart/form-data"
+        ? /* forms are of type: multipart/form-data. But all forms are translated to json. */
+          "application/json"
         : "text/plain";
 }
 
@@ -84,7 +85,7 @@ const http = {
     return fetch(makeUrl(url, params, query), {
       method: "post",
       headers: {
-        "Content-Type": makeContentType(query, json),
+        "Content-Type": makeContentType(query, json, form),
         Accept: "*/*",
       },
       signal: startAbortCountdown(),
@@ -97,7 +98,7 @@ const http = {
     return fetch(makeUrl(url, params, query), {
       method: "put",
       headers: {
-        "Content-Type": makeContentType(query, json),
+        "Content-Type": makeContentType(query, json, form),
         Accept: "*/*",
       },
       signal: startAbortCountdown(),
@@ -110,7 +111,7 @@ const http = {
     return fetch(makeUrl(url, params, query), {
       method: "delete",
       headers: {
-        "Content-Type": makeContentType(query, json),
+        "Content-Type": makeContentType(query, json, form),
         Accept: "*/*",
       },
       signal: startAbortCountdown(),

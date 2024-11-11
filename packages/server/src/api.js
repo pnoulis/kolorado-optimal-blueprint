@@ -6,17 +6,18 @@ import { Router } from "express";
 const api = Router();
 
 api.get("/optimal-blueprint", (req, res) => {});
-api.get("/class/:className?/:id?", (req, res) => {
+api.get("/:className?/:id?", (req, res) => {
   const { className, id } = req.params;
 });
-api.put("/class/:className/:id", (req, res) => {
+api.post("/:className", (req, res) => {
+  const { className, id } = req.params;
+  res.send(req.body);
+});
+api.put("/:className/:id", (req, res) => {
   const { className, id } = req.params;
 });
-api.post("/class/:className/:id?", (req, res) => {
-  const { className, id } = req.params;
-});
-api.delete("/class/:className/:id?", (req, res) => {
-  const { className, id } = req.params;
+api.delete("/:className/:ids", (req, res) => {
+  const { className, ids } = req.params;
 });
 
 export { api };

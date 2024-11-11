@@ -5,22 +5,21 @@
     <main>
         <h3>shapes</h3>
         <menu class="shapes-toolbar">
-            <li><button type="button">add</button> </li>
-            <li><button type="button">delete</button></li>
+            <li><button type="button" id="show-shape-add">add</button> </li>
+            <li><button type="button" id="shape-delete">delete</button></li>
         </menu>
         <form id="form-shape-add" name="form-shape-add">
             <label for="shape-name"> shape name </label>
             <input type="text" name="name" id="shape-name" />
-            <button type="button" class="shape-add">submit</button>
+            <button type="button" id="shape-add">submit</button>
         </form>
         <% for (let i = 0; i < shapes.length; i++) { %>
-        <form id="form-shape-<%= shapes[i].id %>" name="shape-<%= shapes[i].id %>" class="shape">
-            <label for="shape-<%= shapes[i].id %>-checkbox">
-                <%= i %>
-                <input type="checkbox" name="index" id="shape-<%= shapes[i].id %>-checkbox" />
+        <form data-id="<%= shapes[i].id %>" id="form-shape-<%= i %>" name="form-shape-<%= i %>" class="shape">
+            <label id="shape-<%= i %>-index">
+                <input type="text" name="index" value="<%= i %>" />
             </label>
-            <label for="shape-<%= shapes[i].id %>-name">
-                <input type="text" name="name" id="shape-<%= shapes[i].id %>-name" value="<%= shapes[i].name %>" />
+            <label id="shape-<%= i %>-name">
+                <input type="text" name="name" value="<%= shapes[i].name %>" />
             </label>
             <menu class="shape-toolbar">
                 <li><button type="button" class="shape-edit">edit</button></li>
@@ -31,5 +30,7 @@
         </form>
         <% } %>
     </main>
+    <dialog>
+    </dialog>
     <%- include('./footer.ejs')-%>
 </body>
