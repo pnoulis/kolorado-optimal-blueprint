@@ -11,7 +11,7 @@
         <form id="form-shape-add" name="form-shape-add">
             <label for="shape-name"> shape name </label>
             <input type="text" name="name" id="shape-name" />
-            <button type="submit">submit</button>
+            <button type="button" class="shape-add">submit</button>
         </form>
         <% for (let i = 0; i < shapes.length; i++) { %>
         <form id="form-shape-<%= shapes[i].id %>" name="shape-<%= shapes[i].id %>" class="shape">
@@ -23,7 +23,7 @@
                 <input type="text" name="name" id="shape-<%= shapes[i].id %>-name" value="<%= shapes[i].name %>" />
             </label>
             <menu class="shape-toolbar">
-                <li class="editing"><button type="button" class="shape-edit" value="edit">edit</button></li>
+                <li><button type="button" class="shape-edit">edit</button></li>
             </menu>
             <strong class="shape-state <%= Object.keys(states).at(shapes.state) %>">
                 <%= Object.keys(states).at(shapes.state) %>

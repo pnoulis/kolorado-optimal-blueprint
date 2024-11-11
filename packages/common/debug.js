@@ -4,11 +4,13 @@ function debug(title) {
     console.log(title);
   }
   return (msg) => {
-    console.dir(msg, { depth: null });
+    typeof msg === "object"
+      ? console.dir(msg, { depth: null })
+      : console.log(msg);
+    if (title) {
+      console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+    }
   };
-  if (title) {
-    console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-  }
 }
 
 export { debug };

@@ -147,6 +147,7 @@ build:
 	$(RM) -fr $(BUILDIR) 2>/dev/null
 	mkdir -p $(BUILDIR)
 	$(CP) $(SRCDIR_TOP)/public/* $(BUILDIR)/
+	$(CP) $(SRCDIR)/*.ejs $(BUILDIR)/
 	$(EJS) --rm-whitespace $(SRCDIR)/blueprints.ejs -f ../server/seed/blueprints.json > $(BUILDIR)/blueprints.html
 	$(EJS) --rm-whitespace $(SRCDIR)/shapes.ejs -f ../server/seed/shapes.json > $(BUILDIR)/shapes.html
 	$(EJS) --rm-whitespace $(SRCDIR)/home.ejs > $(BUILDIR)/index.html

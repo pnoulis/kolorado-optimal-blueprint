@@ -1,27 +1,33 @@
-import { debug } from "common";
+import "./globals.js";
 import express from "express";
-import * as Path from "node:path";
-import * as URL from "node:url";
+import { join } from "node:path";
+import bodyParser from "body-parser";
 import { api } from "./api.js";
-
-const __dirname = Path.dirname(URL.fileURLToPath(import.meta.url));
-const PUBLICDIR = `${process.env.PUBLICDIR}`;
-
-debug("__dirname")(__dirname);
-debug("PUBLICDIR")(PUBLICDIR);
+import { health } from "./health.js";
+import { logTransaction } from "./log.js";
+import { notFoundError, internalServerError } from "./errors.js";
 
 const app = new express();
 
+app.set("view engine", "ejs");
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(logTransaction);
+app.use("/api", api);
+app.use("/health", health);
+
 app.use("/blueprints", (req, res) => {
-  debug("blueprints->")(Path.join(PUBLICDIR, "blueprints.html"));
-  res.sendFile(Path.join(PUBLICDIR, "blueprints.html"));
+  res.sendFile(join(PUBLICDIR, "blueprints.html"));
 });
 app.use("/shapes", (req, res) => {
-  debug("shapes->")(Path.join(PUBLICDIR, "shapes.html"));
-  res.sendFile(Path.join(PUBLICDIR, "shapes.html"));
+  res.sendFile(join(PUBLICDIR, "shapes.html"));
 });
+
 app.use(express.static(PUBLICDIR));
-app.use("/api", api);
+
+app.all("*", notFoundError);
+app.use(internalServerError);
+
 app.listen(process.env.PORT, () => {
   debug(`${process.env.PKG_ID} listening on port: ${process.env.PORT}`);
 });
