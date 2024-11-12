@@ -1,76 +1,58 @@
 import { debug } from "common";
 import sqlite from "better-sqlite3";
 
-const _db = new sqlite("boptimus.db");
+const _db = new sqlite("boptimus2.db");
+
+_db.exec(`
+CREATE TABLE IF NOT EXISTS shapes (
+id INTEGER PRIMARY KEY,
+name TEXT NOT NULL UNIQUE,
+state INTEGER NOT NULL
+)`);
+_db.exec(
+  "CREATE UNIQUE INDEX IF NOT EXISTS index_shapes_name ON shapes (name)",
+);
 
 const db = {
-  createShape: (() => {
-    const sql = _db.prepare(`INSERT INTO shapes
-(name, state)
-VALUES
-(@name, @state)`);
-    return function (shape) {
-      return sql.run(shape);
+  createShapes: (() => {
+    const one = _db.prepare(
+      "INSERT INTO shapes (name, state) VALUES (@name, @state)",
+    );
+    return function (shapes) {
+      return one.run(shapes);
     };
   })(),
   getShapes: (() => {
-    const all = _db.prepare(`SELECT * FROM shapes`);
-    const some = (shapes, key) =>
-      _db
-        .prepare(
-          `SELECT * FROM shapes
-WHERE ${key} IN (${shapes.map((_) => `'${_}'`).join(",")})`,
-        )
-        .all();
-
-    const one = (shape, key) =>
-      _db
-        .prepare(
-          `SELECT * FROM shapes s
-WHERE ${key}='${shape}'`,
-        )
-        .get();
-
+    const all = _db.prepare("SELECT * FROM shapes");
+    const oneId = _db.prepare("SELECT * FROM shapes WHERE id=?");
+    const oneName = _db.prepare("SELECT * FROM shapes WHERE name=?");
+    const some = (shapes, key) => {
+      let parameters = "";
+      for (let i = 0; i < shapes.length; i++) {
+        parameters += `,'${shapes[i]}'`;
+      }
+      return _db.prepare(
+        `SELECT * FROM shapes WHERE ${key} IN (${parameters.slice(1)})`,
+      );
+    };
     return function (shapes, key) {
-      return !shapes
-        ? all.all()
-        : Array.isArray(shapes)
-          ? some(shapes, key || "id")
-          : one(shapes, key || "id");
+      if (!shapes) return all.all();
+      key ||= "id";
+      return Array.isArray(shapes)
+        ? some(shapes, key).all()
+        : key === "id"
+          ? oneId.get(shapes)
+          : oneName.get(shapes);
+    };
+  })(),
+  updateShapes: (() => {
+    const oneId = _db.prepare(
+      "UPDATE shapes SET name=@name, state=@state WHERE id=@id",
+    );
+    return function (shapes) {
+      return oneId.run(shapes);
     };
   })(),
 };
 
-// db.createShape({ name: "two", state: 0 });
-const shapes = db.getShapes();
-debug()(shapes);
-
-// const db = (() => {
-//   const _db = new sqlite("boptimus.db");
-
-//   _db.exec(`
-// CREATE TABLE IF NOT EXISTS shapes (
-// id INTEGER PRIMARY KEY,
-// name TEXT NOT NULL,
-// state INTEGER NOT NULL
-// )`);
-
-//   return {
-//     createShape: _db.prepare(
-//       `INSERT INTO shapes
-// (name, state)
-// VALUES
-// (@name, @state)`,
-//     ),
-//     getShapes: _db.prepare(`SELECT * FROM shapes`)
-//   };
-// })();
-
-// // const e = db.createShape.run({ name: "one", state: 1 });
-// debug()(db.getShapes.all());
-// // const createShape = db.prepare(`INSERT INTO shapes
-// // (name, state)
-// // VALUES
-// // (@name, @state)`);
-
-// // debug()(e);
+export { db };
