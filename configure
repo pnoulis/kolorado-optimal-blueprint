@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -o errexit
-
 # Author
 export PKG_AUTHOR_NAME="pavlos noulis"
 export PKG_AUTHOR_ID="pnoulis"
@@ -25,11 +23,15 @@ export PKG_DOCUMENTATION_URL="https://github.com/pnoulis/kolorado-optimal-bluepr
 export PKG_BUG_REPORT_URL="https://github.com/pnoulis/kolorado-optimal-blueprint/issues"
 export PKG_SUPPORT_URL="https://github.com/pnoulis/kolorado-optimal-blueprint"
 
+
+buildir=$(realpath -m ./var)
+mkdir $buildir 2>/dev/null
+
 # server options
 server_mode=development
 server_url=http://localhost
 server_port=8080
-db_url=$(realpath -m ./var/boptimus.db)
+db_url=$(realpath -m $buildir/boptimus.db)
 
 # website options
 website_mode=development
@@ -37,30 +39,28 @@ website_url=http://localhost
 website_port=3000
 
 # configure db
-cp -u packages/db/seed/* ./var
+cp -u packages/db/seed/* $buildir
 rm -f $db_url
 sqlite3 $db_url < packages/db/db-create.sql
 sqlite3 $db_url < packages/db/db-seed.sql
 
 
 # Configure website
-cd packages/website
-./configure --mode=$website_mode \
-            --url=$website_url \
-            --port=$website_port \
-            --server-url=$server_url
-make build
-
-cd ../../
+cp -u packages/website/public/* $buildir
+cp -u packages/website/src/*.ejs $buildir
+npx ejs --rm-whitespace packages/website/src/blueprints.ejs -f $buildir/blueprints.json > $buildir/blueprints.html
+npx ejs --rm-whitespace packages/website/src/shapes.ejs -f $buildir/shapes.json > $buildir/shapes.html
+npx ejs --rm-whitespace packages/website/src/home.ejs > $buildir/index.html
+npx esbuild --bundle --target=esnext packages/website/src/main.js > $buildir/main.js
 
 # Configure server
-cd ./packages/server
+cd packages/server
 ./configure --mode=$server_mode \
             --url=$server_url \
             --port=$server_port \
             --db-url=$db_url \
-            --publicdir=../website/build \
-            --statedir=../../var
+            --publicdir=$buildir \
+            --statedir=$buildir
 make dev
 
 # docker compose up -d

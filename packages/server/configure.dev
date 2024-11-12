@@ -1,9 +1,12 @@
 #!/bin/bash
 
 mkdir -p ../../var/
-cp -u seed/* ../../var/
+cp -u ../db/seed/* ../../var/
 
 ./configure --mode=development \
             --publicdir=../website/build \
-            --statedir=../../var
+            --statedir=../../var \
+            --db-url=../../var/boptimus.db
+
+
 

@@ -1,6 +1,10 @@
-function create_shapes() {}
-function read_shapes() {}
-function update_shapes() {}
-function delete_shapes() {}
+const shape = {
+  states: {
+    active: 0,
+    deleted: 1,
+    0: "active",
+    1: "deleted",
+  },
+};
 
-export { create_shapes, read_shapes, update_shapes, delete_shapes };
+export { shape };

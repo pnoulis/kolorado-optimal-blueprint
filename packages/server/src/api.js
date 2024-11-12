@@ -1,23 +1,58 @@
 import { Router } from "express";
-
-// const { blueprints } = await import(`${STATEDIR}/blueprints.js`);
-// const { shapes } = await import(`${STATEDIR}/shapes.js`);
+import { db } from "./sqlite.js";
+import { blueprint, shape } from "common";
+import { createBlueprintsPage, createShapesPage } from "./pages.js";
 
 const api = Router();
 
 api.get("/optimal-blueprint", (req, res) => {});
-api.get("/:className?/:id?", (req, res) => {
-  const { className, id } = req.params;
+
+api.get("/:className?", (req, res) => {
+  const { className } = req.params;
+  const { id, name } = req.query;
+  let shapes, key;
+
+  if (id) {
+    shapes = id.split(",");
+    key = "id";
+  } else if (name) {
+    shapes = name.split(",");
+    key = "name";
+  }
+
+  let data;
+  switch (className) {
+    case "shape":
+      data = db.getShapes(shapes, key);
+      break;
+    case "blueprint":
+      data = db.getBlueprints(shapes, key);
+      break;
+    default:
+      data = {
+        blueprints: db.getBlueprints(shapes, key),
+        shapes: db.getShapes(shapes, key),
+      };
+  }
+  res.send(data);
 });
-api.post("/:className", (req, res) => {
-  const { className, id } = req.params;
-  res.send(req.body);
+api.post("/shapes?", (req, res) => {
+  const info = db.createShapes({
+    name: req.body.name,
+    state: shape.states.active,
+  });
+  createShapesPage();
+  res.send(info);
 });
-api.put("/:className/:id", (req, res) => {
-  const { className, id } = req.params;
+api.post("/blueprints?", (req, res) => {
+  const { className } = req.params;
 });
-api.delete("/:className/:ids", (req, res) => {
-  const { className, ids } = req.params;
+api.put("/:className", (req, res) => {
+  const { className, id } = req.params;
+  const { key } = req.query;
+});
+api.delete("/:className", (req, res) => {
+  const { className, id } = req.params;
 });
 
 export { api };

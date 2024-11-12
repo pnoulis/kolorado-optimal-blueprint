@@ -1,11 +1,12 @@
-function create_blueprints() {}
-function read_blueprints() {}
-function update_blueprints() {}
-function delete_blueprints() {}
-
-export {
-  create_blueprints,
-  read_blueprints,
-  update_blueprints,
-  delete_blueprints,
+const blueprint = {
+  states: {
+    active: 0,
+    deleted: 1,
+    invalid: 2,
+    0: "active",
+    1: "deleted",
+    2: "invalid",
+  },
 };
+
+export { blueprint };
