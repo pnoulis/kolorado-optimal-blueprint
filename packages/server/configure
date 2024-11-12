@@ -43,13 +43,13 @@ export PKG_AUTHOR_ID="pnoulis"
 export PKG_AUTHOR_EMAIL="pavlos.noulis@gmail.com"
 export PKG_AUTHOR_HOME_URL="https://github.com/pnoulis"
 # Package
-export PKG_NAME="server"
-export PKG_ID="server"
-export PKG_PRETTY_NAME="server"
+export PKG_NAME="kolorado-optimal-blueprint-server"
+export PKG_ID="boptimus-server"
+export PKG_PRETTY_NAME="kolorado optimal blueprint server"
 export PKG_VERSION="0.0.1"
 export PKG_VERSION_ID="0.0.1"
-export PKG_VERSION_CODENAME="server"
-export PKG_TARNAME="server-v0.0.1"
+export PKG_VERSION_CODENAME=""
+export PKG_TARNAME="boptimus-server-v0.0.1"
 export PKG_REPOSITORY_TYPE="git"
 export PKG_REPOSITORY_DOMAIN="github.com"
 export PKG_REPONAME="kolorado-optimal-blueprint"
@@ -66,6 +66,7 @@ export URL=http://localhost
 export PORT=8080
 export BUILDIR_BASENAME=build
 export DISTDIR_BASENAME=dist
+export DB_URL=
 
 main() {
     parse_args "$@"
@@ -111,6 +112,7 @@ resolve_options() {
     echo "buildir...|$BUILDIR"
     echo "distdir...|$DISTDIR"
     echo "publicdir...|$PUBLICDIR"
+    echo "db_url...|$DB_URL"
 }
 resolve_buildir() {
     print_chapter "Resolving buildir..."
@@ -371,6 +373,10 @@ parse_args() {
             --statedir | --statedir=*)
                 parse_param "$@" || shift $?
                 export STATEDIR="$(realpath -e "$_param")"
+                ;;
+            --db-url | --db-url=*)
+                parse_param "$@" || shift $?
+                DB_URL="$(realpath -e "$_param")"
                 ;;
             -h | --help)
                 usage

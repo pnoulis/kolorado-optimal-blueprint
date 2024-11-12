@@ -36,8 +36,8 @@ PKG_SUPPORT_URL				= IN_PKG_SUPPORT_URL
 ##################################################
 # Program name transformation
 ##################################################
-export program_name					= IN_PROGRAM_NAME
-export program_vname					= IN_PROGRAM_VNAME
+program_name					= IN_PROGRAM_NAME
+program_vname					= IN_PROGRAM_VNAME
 
 ##################################################
 # Installation directories
@@ -128,11 +128,12 @@ colon = :
 VPATH = tmp src
 
 # Options
-MODE				= IN_MODE
-HOSTNAME		= IN_URL_HOSTNAME
-PORT				= IN_URL_PORT
-URL					= IN_URL_ORIGIN
-BASENAME		= IN_URL_PATH
+MODE			= IN_MODE
+HOSTNAME	= IN_URL_HOSTNAME
+PORT			= IN_URL_PORT
+URL				= IN_URL_ORIGIN
+BASENAME	= IN_URL_PATH
+DB_URL		= IN_DB_URL
 
 ##################################################
 # Default target

@@ -1,29 +1,66 @@
 #!/bin/bash
 
+set -o errexit
+
+# Author
+export PKG_AUTHOR_NAME="pavlos noulis"
+export PKG_AUTHOR_ID="pnoulis"
+export PKG_AUTHOR_EMAIL="pavlos.noulis@gmail.com"
+export PKG_AUTHOR_HOME_URL="https://github.com/pnoulis"
+# Package
+export PKG_NAME="kolorado-optimal-blueprint"
+export PKG_ID="boptimus"
+export PKG_PRETTY_NAME="kolorado optimal blueprint"
+export PKG_VERSION="0.0.1"
+export PKG_VERSION_ID="0.0.1"
+export PKG_VERSION_CODENAME=""
+export PKG_TARNAME="kolorado-optimal-blueprint-v0.0.1"
+export PKG_REPOSITORY_TYPE="git"
+export PKG_REPOSITORY_DOMAIN="github.com"
+export PKG_REPONAME="kolorado-optimal-blueprint"
+export PKG_REPOSITORY_PATH="pnoulis/kolorado-optimal-blueprint"
+export PKG_REPOSITORY_URL="https://github.com/pnoulis/kolorado-optimal-blueprint"
+export PKG_HOME_URL="https://github.com/pnoulis/kolorado-optimal-blueprint"
+export PKG_DOCUMENTATION_URL="https://github.com/pnoulis/kolorado-optimal-blueprint#readme"
+export PKG_BUG_REPORT_URL="https://github.com/pnoulis/kolorado-optimal-blueprint/issues"
+export PKG_SUPPORT_URL="https://github.com/pnoulis/kolorado-optimal-blueprint"
+
 # server options
 server_mode=development
 server_url=http://localhost
 server_port=8080
+db_url=$(realpath -m ./var/boptimus.db)
 
 # website options
 website_mode=development
 website_url=http://localhost
 website_port=3000
 
+# configure db
+cp -u packages/db/seed/* ./var
+rm -f $db_url
+sqlite3 $db_url < packages/db/db-create.sql
+sqlite3 $db_url < packages/db/db-seed.sql
+
+
+# Configure website
+cd packages/website
+./configure --mode=$website_mode \
+            --url=$website_url \
+            --port=$website_port \
+            --server-url=$server_url
+make build
+
+cd ../../
+
 # Configure server
 cd ./packages/server
 ./configure --mode=$server_mode \
             --url=$server_url \
-            --port=$server_port
+            --port=$server_port \
+            --db-url=$db_url \
+            --publicdir=../website/build \
+            --statedir=../../var
+make dev
 
-cd ../../
-
-# Configure website
-cd ./packages/website
-./configure --mode=$website_mode \
-            --url=$website_url \
-            --port=$website_port \
-            --server-url=$server_url \
-
-
-docker compose up -d
+# docker compose up -d
