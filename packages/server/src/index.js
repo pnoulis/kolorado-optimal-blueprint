@@ -24,16 +24,9 @@ app.use(
 app.all("*", notFoundError);
 app.use(internalServerError);
 
+debug()(`Created -> ${createShapesPage()}`);
+debug()(`Created -> ${createBlueprintsPage()}`);
+
 app.listen(process.env.PORT, () => {
-  try {
-    debug()(`${process.env.PKG_ID} listening on port: ${process.env.PORT}`);
-    let page;
-    page = createShapesPage();
-    debug()(`Created -> ${page}`);
-    // page = createBlueprintsPage();
-    // debug()(`Created -> ${page}`);
-  } catch (err) {
-    console.error(err);
-    process.exit(1);
-  }
+  debug()(`${process.env.PKG_ID} listening on port: ${process.env.PORT}`);
 });
