@@ -1,9 +1,44 @@
 import { debug } from "common";
 import sqlite from "better-sqlite3";
 
-const _db = new sqlite(process.env.DB_URL);
+/**
+ * Shape State
+ * @typedef {number} ShapeState - active(0), deleted(1)
+ */
 
+/**
+ * Shape
+ * @typedef {Object} Shape
+ * @property {string} id
+ * @property {string} name
+ * @property {ShapeState} state
+ */
+
+/**
+ * Blueprint State
+ * @typedef {number} BlueprintState - active(0), deleted(1), invalid(2)
+ */
+
+/**
+ * @typedef {Object} BlueprintShape
+ * @extends Shape
+ * @property {number} count
+ */
+
+/**
+ * Blueprint
+ * @typedef {Object} Blueprint
+ * @property {string} id
+ * @property {string} name
+ * @property {BlueprintState} state
+ * @property {BlueprintShape[]} shapes
+ */
+
+const _db = new sqlite(process.env.DB_URL);
 const db = {
+  /**
+   * @returns {Shape}
+   */
   createShapes: (() => {
     const one = _db.prepare(
       "INSERT INTO shape (name, state) VALUES (@name, @state)",
@@ -12,6 +47,9 @@ const db = {
       return one.run(shapes);
     };
   })(),
+  /**
+   * @returns {Shape[]|Shape}
+   */
   getShapes: (() => {
     const all = _db.prepare("SELECT * FROM shape");
     const oneId = _db.prepare("SELECT * FROM shape WHERE id=?");
@@ -44,6 +82,9 @@ const db = {
     };
   })(),
 
+  /**
+   * @returns {Blueprint}
+   */
   createBlueprints: (() => {
     const one = _db.prepare(
       "INSERT INTO blueprint (name, state) VALUES (@name, @state)",
@@ -53,6 +94,9 @@ const db = {
     };
   })(),
 
+  /**
+   * @returns {(Blueprint[]|Blueprint)}
+   */
   getBlueprints: (() => {
     const all = _db.prepare(`
 SELECT blueprint.id, blueprint.name, blueprint.state,
@@ -86,14 +130,14 @@ JOIN shape on blueprint_shape.shape_id=shape.id`);
           state: blueprints_in[i].state,
           shapes: [],
         };
-        blueprints_out[blueprints.in[i].id].shapes.push({
+        blueprints_out[blueprints_in[i].id].shapes.push({
           id: blueprints_in[i].shape_id,
           name: blueprints_in[i].shape_name,
           state: blueprints_in[i].shape_state,
           count: blueprints_in[i].shape_count,
         });
       }
-      return blueprints_out;
+      return Object.values(blueprints_out);
       // blueprints = all.all();
       // if (!blueprints) return all.all();
       // key ||= "id";

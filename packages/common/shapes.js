@@ -1,9 +1,17 @@
 const shape = {
-  states: {
-    active: 0,
-    deleted: 1,
-    0: "active",
-    1: "deleted",
+  states(state, form) {
+    switch (state) {
+      case "active":
+        return form === "number" ? 0 : state;
+      case 0:
+        return form === "alpha" ? "active" : state;
+      case "deleted":
+        return form === "number" ? 1 : state;
+      case 1:
+        return form === "alpha" ? "deleted" : state;
+      default:
+        throw new TypeError(`Unknown state enum key: '${state}'`);
+    }
   },
 };
 
