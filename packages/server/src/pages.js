@@ -22,8 +22,10 @@ function createBlueprintsPage(data) {
     join(process.env.PUBLICDIR, "blueprints.ejs"),
     join(process.env.PUBLICDIR, "blueprints.html"),
     {
-      blueprints: data.shapes || db.getBlueprints(),
-      states: data.states || blueprint.states,
+      blueprints: data.blueprints || db.getBlueprints(),
+      shapes: data.shapes || db.getShapes(),
+      blueprint,
+      shape,
     },
   );
 }
@@ -35,7 +37,7 @@ function createShapesPage(data) {
     join(process.env.PUBLICDIR, "shapes.html"),
     {
       shapes: data.shapes || db.getShapes(),
-      states: data.states || shape.states,
+      shape,
     },
   );
 }

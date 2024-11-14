@@ -1,44 +1,80 @@
+<!--
+    Data dependency:
+     {
+     blueprints: [ { id, name, state, shapes: [ { id, name, state, count }..., ] }..., ]
+     shapes: [ { id, name, state }..., ]
+     blueprint.states()
+     shape.states()
+     }
+-->
+
 <%- include('./head.ejs')-%>
 
 <body>
     <%- include('./header.ejs')-%>
     <main>
-        <header>
-            <h3>blueprints</h3>
-        </header>
-        <form>
-            <% for (let i = 0; i < blueprints.length; i++) { %>
-            <fieldset class="blueprint" id="blueprint-<%= blueprints[i].id %>">
-                <label for="blueprint-<%= blueprints[i].id %>-checkbox">
-                    <%= i %>
-                    <input type="checkbox" id="blueprint-<%= blueprints[i].id %>-checkbox" />
-                </label>
-                <label for="blueprint-<%= blueprints[i].id %>-name">
-                    <%= blueprints[i].name %>
-                    <input type="text" id="blueprint-<%= blueprints[i].id %>-name" value="<%= blueprints[i].name %>" disabled />
-                </label>
-                <label for="blueprint-<%= blueprints[i].id %>-shapes-count">
-                    <%= blueprints[i].count%>
-                    <input type="text" id="blueprint-<%= blueprints[i].id %>-shapes-count" disabled />
-                </label>
-                <menu class="blueprint-toolbar">
-                    <li><button type="button" class="blueprint-edit">edit</button></li>
-                    <li><button type="button" class="blueprint-shapes-add">delete</button></li>
-                </menu>
-                <strong class="blueprint-state <%= Object.keys(states).at(blueprints.state) %>">
-                    <%= Object.keys(states).at(blueprints.state) %>
-                </strong>
-                <ul class="blueprint-shapes">
-                    <% for (const shape of Object.entries(blueprints[i].shapes)) { %>
-                    <li class="blueprint-shape">
-                        <label for="blueprint-shape-<%= shape[0] %>"><%= shapes[shape[0]].name %></label>
-                        <input id="blueprint-shape-<%= shape[0] %>" type="number" value="<%= shape[1] %>" />
-                    </li>
-                    <% } %>
-                </ul>
-            </fieldset>
+        <h3>blueprints</h3>
+        <menu class="blueprints-toolbar">
+            <li><button type="button" id="show-blueprint-add">add</button> </li>
+            <li><button type="button" id="blueprint-delete">delete</button></li>
+        </menu>
+        <form id="from-blueprint-add" name="form-blueprint-add">
+            <div id="input-blueprint-name">
+                <label for="blueprint-name"> blueprint name </label>
+                <input type="text" name="name" id="blueprint-name" value="" />
+            </div>
+            <div class="blueprint-shapes">
+                <fieldset class="blueprint-shape">
+                    <label class="blueprint-shape-id">
+                        <select name="blueprint-shape-0-id">
+                            <option value="">select shape</option>
+                            <% for (let i = 0; i < shapes.length; i++) { %>
+                            <option value="<%= shapes[i].id %>"><%= shapes[i].name %></option>
+                            <% } %>
+                        </select>
+                    </label>
+                    <label class="blueprint-shape-count">
+                        <input type="number" name="blueprint-shape-0-count" value="0" />
+                    </label>
+                </fieldset>
+                <button type="button" id="blueprint-shape-add">add shape</button>
+            </div>
+            <button type="button" id="blueprint-add">submit</button>
+        </form>
+        <% for (let i = 0; i < blueprints.length; i++) { %>
+        <form data-id="<%= blueprints[i].id %>" id="form-blueprint-<%= i %>" name="form-blueprint-<%= i %>" class="blueprint">
+            <label class="blueprint-index">
+                <input type="number" name="index" value="<%= i %>" />
+            </label>
+            <label class="blueprint-name">
+                <input type="text" name="name" value="<%= blueprints[i].name %>" />
+            </label>
+            <label class="blueprint-state <%= blueprint.states(blueprints[i].state, 'alpha') %>">
+                <input type="text" name="state" value="<%= blueprint.states(blueprints[i].state, 'alpha') %>" />
+            </label>
+            <menu class="blueprint-toolbar">
+                <li><button type="button" class="blueprint-edit">edit</button></li>
+            </menu>
+            <ul class="blueprint-shapes">
+                <% for (let y = 0; y < blueprints[i].shapes.length; y++) { %>
+                <li class="blueprint-shape">
+                    <label class="blueprint-shape-index">
+                        <input type="number" name="blueprint-shape-<%= y %>-index" value="<%= y %>" />
+                    </label>
+                    <label class="blueprint-shape-name">
+                        <input type="text" name="blueprint-shape-<%= y %>-name" value="<%= blueprints[i].shapes[y].name %>" />
+                    </label>
+                    <label class="blueprint-shape-count">
+                        <input type="number" name="blueprint-shape-<%= y %>-count" value="<%= blueprints[i].shapes[y].count %>" />
+                    </label>
+                    <label class="blueprint-shape-state <%= shape.states(blueprints[i].shapes[y].state, 'alpha') %>">
+                        <input type="text" name="blueprint-shape-<%= y %>-state" value="<%= shape.states(blueprints[i].shapes[y].state, 'alpha') %>" />
+                    </label>
+                </li>
+            </ul>
             <% } %>
         </form>
+        <% } %>
     </main>
     <%- include('./footer.ejs')-%>
 </body>

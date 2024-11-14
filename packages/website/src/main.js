@@ -46,13 +46,6 @@ window.addEventListener("DOMContentLoaded", () => {
   );
 });
 
-function handleShapeAdd() {}
-function handleShapeEdit(e) {}
-function handleShapeDelete() {}
-function handleBlueprintAdd() {}
-function handleBlueprintEdit() {}
-function handleBlueprintDelete() {}
-
 function createBtn(className, type) {
   const btn = document.createElement("button");
   const li = document.createElement("li");

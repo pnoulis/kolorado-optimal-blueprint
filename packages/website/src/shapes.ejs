@@ -1,3 +1,11 @@
+<!--
+     Data dependency:
+     {
+     shapes: [ { id, name, state, }..., ]
+     shape.states()
+     }
+-->
+
 <%- include('./head.ejs')-%>
 
 <body>
@@ -10,23 +18,23 @@
         </menu>
         <form id="form-shape-add" name="form-shape-add">
             <label for="shape-name"> shape name </label>
-            <input type="text" name="name" id="shape-name" />
+            <input type="text" name="name" id="shape-name" value="" />
             <button type="button" id="shape-add">submit</button>
         </form>
         <% for (let i = 0; i < shapes.length; i++) { %>
         <form data-id="<%= shapes[i].id %>" id="form-shape-<%= i %>" name="form-shape-<%= i %>" class="shape">
-            <label id="shape-<%= i %>-index">
-                <input type="text" name="index" value="<%= i %>" />
+            <label class="shape-index">
+                <input type="number" name="index" value="<%= i %>" />
             </label>
-            <label id="shape-<%= i %>-name">
+            <label class="shape-name">
                 <input type="text" name="name" value="<%= shapes[i].name %>" />
+            </label>
+            <label class="shape-state <%= shape.states(shapes[i].state, 'alpha') %>">
+                <input type="text" name="state" value="<%= shape.states(shapes[i].state, 'alpha') %>" />
             </label>
             <menu class="shape-toolbar">
                 <li><button type="button" class="shape-edit">edit</button></li>
             </menu>
-            <strong class="shape-state <%= Object.keys(states).at(shapes.state) %>">
-                <%= Object.keys(states).at(shapes.state) %>
-            </strong>
         </form>
         <% } %>
     </main>
