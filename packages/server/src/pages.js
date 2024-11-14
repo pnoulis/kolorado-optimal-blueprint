@@ -17,23 +17,25 @@ function createPage(template, destination, data) {
 }
 
 function createBlueprintsPage(data) {
+  data ||= {};
   return createPage(
     join(process.env.PUBLICDIR, "blueprints.ejs"),
     join(process.env.PUBLICDIR, "blueprints.html"),
-    data || {
-      blueprints: db.getBlueprints(),
-      states: blueprint.states,
+    {
+      blueprints: data.shapes || db.getBlueprints(),
+      states: data.states || blueprint.states,
     },
   );
 }
 
 function createShapesPage(data) {
+  data ||= {};
   return createPage(
     join(process.env.PUBLICDIR, "shapes.ejs"),
     join(process.env.PUBLICDIR, "shapes.html"),
-    data || {
-      shapes: db.getShapes(),
-      states: shape.states,
+    {
+      shapes: data.shapes || db.getShapes(),
+      states: data.states || shape.states,
     },
   );
 }
