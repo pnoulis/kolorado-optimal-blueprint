@@ -100,28 +100,54 @@ const db = {
   getBlueprints: (() => {
     const all = _db.prepare(`
 SELECT blueprint.id, blueprint.name, blueprint.state,
-shape.id AS shape_id, shape.name AS shape_name, shape.state as shape_state,
+shape.id AS shape_id, shape.name AS shape_name, shape.state AS shape_state,
 blueprint_shape.shape_count
 FROM blueprint
 JOIN blueprint_shape ON blueprint.id=blueprint_shape.blueprint_id
-JOIN shape on blueprint_shape.shape_id=shape.id`);
-    // const oneId = _db.prepare("SELECT * FROM blueprint WHERE id=?");
-    // const oneName = _db.prepare("SELECT * FROM blueprint WHERE name=?");
-    // const some = (blueprints, key) => {
-    //   let parameters = "";
-    //   for (let i = 0; i < blueprints.length; i++) {
-    //     parameters += `,'${blueprints[i]}'`;
-    //   }
-    //   return _db.prepare(
-    //     `SELECT * FROM blueprint WHERE ${key} IN (${parameters.slice(1)})`,
-    //   );
-    // };
+JOIN shape ON blueprint_shape.shape_id=shape.id`);
+    const oneId = _db.prepare(`
+SELECT blueprint.id, blueprint.name, blueprint.state,
+shape.id AS shape_id, shape.name AS shape_name, shape.state AS shape_state,
+blueprint_shape.shape_count
+FROM blueprint
+JOIN blueprint_shape ON blueprint.id=blueprint_shape.blueprint_id
+JOIN shape ON blueprint_shape.shape_id=shape.id
+WHERE blueprint.id=?
+`);
+    const oneName = _db.prepare(`
+SELECT blueprint.id, blueprint.name, blueprint.state,
+shape.id AS shape_id, shape.name AS shape_name, shape.state AS shape_state,
+blueprint_shape.shape_count
+FROM blueprint
+JOIN blueprint_shape ON blueprint.id=blueprint_shape.blueprint_id
+JOIN shape on blueprint_shape.shape_id=shape.id
+WHERE blueprint.name=?
+`);
+    const some = (blueprints, key) => {
+      let parameters = "";
+      for (let i = 0; i < blueprints.length; i++) {
+        parameters += `,'${blueprints[i]}'`;
+      }
+      return _db.prepare(`
+SELECT blueprint.id, blueprint.name, blueprint.state,
+shape.id AS shape_id, shape.name AS shape_name, shape.state AS shape_state,
+blueprint_shape.shape_count
+FROM blueprint
+JOIN blueprint_shape ON blueprint.id=blueprint_shape.blueprint_id
+JOIN shape ON blueprint_shape.shape_id=shape.id
+WHERE blueprint.${key} IN (${parameters.slice(1)})
+`);
+    };
     return function (blueprints, key) {
       let blueprints_in;
       const blueprints_out = {};
 
-      blueprints_in = all.all();
-      // return all.all();
+      key ||= "id";
+      if (!blueprints) blueprints_in = all.all();
+      else if (Array.isArray(blueprints))
+        blueprints_in = some(blueprints, key).all();
+      else if (key === "name") blueprints_in = oneId.all(blueprints);
+      else blueprints_in = oneName.all(blueprints);
 
       for (let i = 0; i < blueprints_in.length; i++) {
         blueprints_out[blueprints_in[i].id] ||= {
@@ -138,14 +164,6 @@ JOIN shape on blueprint_shape.shape_id=shape.id`);
         });
       }
       return Object.values(blueprints_out);
-      // blueprints = all.all();
-      // if (!blueprints) return all.all();
-      // key ||= "id";
-      // return Array.isArray(blueprints)
-      //   ? some(blueprints, key).all()
-      //   : key === "id"
-      //     ? oneId.get(blueprints)
-      //     : oneName.get(blueprints);
     };
   })(),
 };
