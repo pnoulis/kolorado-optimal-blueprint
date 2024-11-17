@@ -3,8 +3,8 @@
      {
      blueprints: [ { id, name, state, shapes: [ { id, name, state, count }..., ] }..., ]
      shapes: [ { id, name, state }..., ]
-     blueprint.states()
-     shape.states()
+     Blueprint.states()
+     Shape.states()
      }
 -->
 
@@ -49,8 +49,8 @@
             <label class="blueprint-name">
                 <input type="text" name="name" value="<%= blueprints[i].name %>" />
             </label>
-            <label class="blueprint-state <%= blueprint.states(blueprints[i].state, 'alpha') %>">
-                <input type="text" name="state" value="<%= blueprint.states(blueprints[i].state, 'alpha') %>" />
+            <label class="blueprint-state <%= Blueprint.states(blueprints[i].state, 'alpha') %>">
+                <input type="text" name="state" value="<%= Blueprint.states(blueprints[i].state, 'alpha') %>" />
             </label>
             <menu class="blueprint-toolbar">
                 <li><button type="button" class="blueprint-edit">edit</button></li>
@@ -67,8 +67,8 @@
                     <label class="blueprint-shape-count">
                         <input type="number" name="blueprint-shape-<%= y %>-count" value="<%= blueprints[i].shapes[y].count %>" />
                     </label>
-                    <label class="blueprint-shape-state <%= shape.states(blueprints[i].shapes[y].state, 'alpha') %>">
-                        <input type="text" name="blueprint-shape-<%= y %>-state" value="<%= shape.states(blueprints[i].shapes[y].state, 'alpha') %>" />
+                    <label class="blueprint-shape-state <%= Shape.states(blueprints[i].shapes[y].state, 'alpha') %>">
+                        <input type="text" name="blueprint-shape-<%= y %>-state" value="<%= Shape.states(blueprints[i].shapes[y].state, 'alpha') %>" />
                     </label>
                 </li>
             </ul>

@@ -2,7 +2,7 @@
      Data dependency:
      {
      shapes: [ { id, name, state, }..., ]
-     shape.states()
+     Shape.states()
      }
 -->
 
@@ -29,8 +29,8 @@
             <label class="shape-name">
                 <input type="text" name="name" value="<%= shapes[i].name %>" />
             </label>
-            <label class="shape-state <%= shape.states(shapes[i].state, 'alpha') %>">
-                <input type="text" name="state" value="<%= shape.states(shapes[i].state, 'alpha') %>" />
+            <label class="shape-state <%= Shape.states(shapes[i].state, 'alpha') %>">
+                <input type="text" name="state" value="<%= Shape.states(shapes[i].state, 'alpha') %>" />
             </label>
             <menu class="shape-toolbar">
                 <li><button type="button" class="shape-edit">edit</button></li>
