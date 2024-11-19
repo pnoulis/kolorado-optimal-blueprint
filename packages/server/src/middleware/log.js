@@ -36,7 +36,7 @@ ${req.body ? prettyJson.render(req.body) : "{}"}`,
   res.on("finish", () => {
     const type = res.get("Content-Type");
     const txt = /\/text|\/json/.test(type);
-    console.log(`[${timestamp}] ${res.statusCode} ${url}
+    console.log(`[${timestamp}] ${req.method} ${res.statusCode} ${url}
 HEADERS>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ${prettyJson.render(res.getHeaders())}
 BODY>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
