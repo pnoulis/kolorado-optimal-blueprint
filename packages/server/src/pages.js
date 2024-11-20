@@ -1,4 +1,3 @@
-import { Blueprint, Shape } from "common";
 import ejs from "ejs";
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -24,8 +23,6 @@ function createBlueprintsPage(data) {
     {
       blueprints: data.blueprints || db.getBlueprints(),
       shapes: data.shapes || db.getShapes(),
-      Blueprint,
-      Shape,
     },
   );
 }
@@ -37,7 +34,6 @@ function createShapesPage(data) {
     join(process.env.PUBLICDIR, "shapes.html"),
     {
       shapes: data.shapes || db.getShapes(),
-      Shape,
     },
   );
 }

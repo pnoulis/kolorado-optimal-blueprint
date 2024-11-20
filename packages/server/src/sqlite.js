@@ -139,25 +139,22 @@ VALUES (@id, @shape_id, @count)`);
    */
   getBlueprints: (() => {
     const all = _db.prepare(`
-SELECT blueprint.id, blueprint.name, blueprint.state,
-shape.id AS shape_id, shape.name AS shape_name, shape.state AS shape_state,
-blueprint_shape.count
+SELECT blueprint.id, blueprint.name,
+shape.id AS shape_id, shape.name AS shape_name, blueprint_shape.count
 FROM blueprint
 JOIN blueprint_shape ON blueprint.id=blueprint_shape.blueprint_id
 JOIN shape ON blueprint_shape.shape_id=shape.id`);
     const oneId = _db.prepare(`
-SELECT blueprint.id, blueprint.name, blueprint.state,
-shape.id AS shape_id, shape.name AS shape_name, shape.state AS shape_state,
-blueprint_shape.count
+SELECT blueprint.id, blueprint.name,
+shape.id AS shape_id, shape.name AS shape_name, blueprint_shape.count
 FROM blueprint
 JOIN blueprint_shape ON blueprint.id=blueprint_shape.blueprint_id
 JOIN shape ON blueprint_shape.shape_id=shape.id
 WHERE blueprint.id=?
 `);
     const oneName = _db.prepare(`
-SELECT blueprint.id, blueprint.name, blueprint.state,
-shape.id AS shape_id, shape.name AS shape_name, shape.state AS shape_state,
-blueprint_shape.count
+SELECT blueprint.id, blueprint.name,
+shape.id AS shape_id, shape.name AS shape_name, blueprint_shape.count
 FROM blueprint
 JOIN blueprint_shape ON blueprint.id=blueprint_shape.blueprint_id
 JOIN shape ON blueprint_shape.shape_id=shape.id
@@ -169,9 +166,8 @@ WHERE blueprint.name=?
         parameters += `,'${blueprints[i]}'`;
       }
       return _db.prepare(`
-SELECT blueprint.id, blueprint.name, blueprint.state,
-shape.id AS shape_id, shape.name AS shape_name, shape.state AS shape_state,
-blueprint_shape.count
+SELECT blueprint.id, blueprint.name,
+shape.id AS shape_id, shape.name AS shape_name, blueprint_shape.count
 FROM blueprint
 JOIN blueprint_shape ON blueprint.id=blueprint_shape.blueprint_id
 JOIN shape ON blueprint_shape.shape_id=shape.id
@@ -193,13 +189,11 @@ WHERE blueprint.${key} IN (${parameters.slice(1)})
         blueprints_out[blueprints_in[i].id] ||= {
           id: blueprints_in[i].id,
           name: blueprints_in[i].name,
-          state: blueprints_in[i].state,
           shapes: [],
         };
         blueprints_out[blueprints_in[i].id].shapes.push({
           id: blueprints_in[i].shape_id,
           name: blueprints_in[i].shape_name,
-          state: blueprints_in[i].shape_state,
           count: blueprints_in[i].count,
         });
       }
