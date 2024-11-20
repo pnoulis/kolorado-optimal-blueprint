@@ -53,9 +53,8 @@ const db = {
     const oneId = _db.prepare("DELETE FROM shape WHERE id=?");
     const oneName = _db.prepare("DELETE FROM shape WHERE name=?");
     return function (shape, key) {
-      let sqliteResponse;
       key ||= "id";
-      sqliteResponse = key === "id" ? oneId.run(shape) : oneName.run(shape);
+      return key === "id" ? oneId.run(shape) : oneName.run(shape);
     };
   })(),
 
