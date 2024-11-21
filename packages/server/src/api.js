@@ -1,7 +1,9 @@
 import { Router } from "express";
 import { db } from "./sqlite.js";
-import { Blueprint, Kerror, Shape } from "common";
+import { Blueprint, Kerror, Shape, delay } from "common";
 import { createBlueprintsPage, createShapesPage } from "./pages.js";
+import { toExcel } from "./export-data.js";
+import { matchResourceRepresentationRequest } from "./middleware/matchResourceRepresentationRequest.js";
 
 const api = Router();
 
@@ -15,36 +17,52 @@ api.get("/optimal-blueprint", (req, res) => {});
  * @param {string} [req.query.name]
  * @returns {Object<shapes,blueprints>}
  */
-api.get("/:className?", (req, res) => {
-  const { className } = req.params;
-  const { id, name } = req.query;
-  let ids, key;
+api.get(
+  "/:className?",
+  matchResourceRepresentationRequest([
+    "application/json",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "*/*",
+  ]),
+  (req, res) => {
+    const { className } = req.params;
+    const { id, name } = req.query;
+    let ids, key, blueprints, shapes;
 
-  if (id) {
-    ids = id.split(",");
-    key = "id";
-  } else if (name) {
-    ids = name.split(",");
-    key = "name";
-  }
-  let data;
-  switch (className) {
-    case "shapes":
-    case "shape":
-      data = db.getShapes(ids, key);
-      break;
-    case "blueprints":
-    case "blueprint":
-      data = db.getBlueprints(ids, key);
-      break;
-    default:
-      data = {
-        blueprints: db.getBlueprints(),
-        shapes: db.getShapes(),
-      };
-  }
-  res.send(data);
-});
+    if (id) {
+      ids = id.split(",");
+      key = "id";
+    } else if (name) {
+      ids = name.split(",");
+      key = "name";
+    }
+    switch (className) {
+      case "shapes":
+      case "shape":
+        shapes = db.getShapes(ids, key);
+        break;
+      case "blueprints":
+      case "blueprint":
+        blueprints = db.getBlueprints(ids, key);
+        break;
+      default:
+        blueprints = db.getBlueprints();
+        shapes = db.getShapes();
+    }
+    switch (res.get("Content-Type").split(";")[0]) {
+      case "*/*": /* fall through */
+      case "application/json":
+        res.send({ blueprints, shapes });
+        break;
+      case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+        res.set("Cache-Control", "no-cache");
+        toExcel(blueprints, shapes)
+          .on("data", (data) => res.write(data))
+          .on("close", () => res.end());
+        break;
+    }
+  },
+);
 
 /**
  * @param {(Shape[]|Shape)} req.body
