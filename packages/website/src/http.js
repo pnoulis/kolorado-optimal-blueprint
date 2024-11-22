@@ -52,8 +52,7 @@ function startAbortCountdown() {
 
 async function parseResponse(res) {
   const type = res.headers.get("content-type").split(";")[0].split("/")[1];
-  const body = await (type === "json" ? res.json() : res.text());
-  if (res.status >= 200 && res.status < 300) return body;
+  if (res.status >= 200 && res.status < 300) return res;
   throw new Error(res.statusText, { cause: { res, type, body } });
 }
 
@@ -69,24 +68,26 @@ async function handleError(err) {
 }
 
 const http = {
-  get(url, { params, query, json, form } = {}) {
+  get(url, { params, query, json, form, headers } = {}) {
     return fetch(makeUrl(url, params, query), {
       method: "get",
       headers: {
         "Content-Type": makeContentType(query),
         Accept: "*/*",
+        ...headers,
       },
       signal: startAbortCountdown(),
     })
       .then(parseResponse)
       .catch(handleError);
   },
-  post(url, { params, query, json, form } = {}) {
+  post(url, { params, query, json, form, headers } = {}) {
     return fetch(makeUrl(url, params, query), {
       method: "post",
       headers: {
         "Content-Type": makeContentType(query, json, form),
         Accept: "*/*",
+        ...headers,
       },
       signal: startAbortCountdown(),
       body: makeBody(json, form),
@@ -94,12 +95,13 @@ const http = {
       .then(parseResponse)
       .catch(handleError);
   },
-  put(url, { params, query, json, form } = {}) {
+  put(url, { params, query, json, form, headers } = {}) {
     return fetch(makeUrl(url, params, query), {
       method: "put",
       headers: {
         "Content-Type": makeContentType(query, json, form),
         Accept: "*/*",
+        ...headers,
       },
       signal: startAbortCountdown(),
       body: makeBody(json, form),
@@ -107,12 +109,13 @@ const http = {
       .then(parseResponse)
       .catch(handleError);
   },
-  delete(url, { params, query, json, form } = {}) {
+  delete(url, { params, query, json, form, headers } = {}) {
     return fetch(makeUrl(url, params, query), {
       method: "delete",
       headers: {
         "Content-Type": makeContentType(query, json, form),
         Accept: "*/*",
+        ...headers,
       },
       signal: startAbortCountdown(),
       body: makeBody(json, form),
