@@ -44,6 +44,11 @@ window.addEventListener("DOMContentLoaded", () => {
     "click",
     handleSubmitCreate.bind(null, "blueprint"),
   );
+
+  const exportBtns = document.querySelectorAll("button[value=export]");
+  for (let i = 0; i < exportBtns?.length; i++) {
+    exportBtns[i].addEventListener("click", handleExportExcel);
+  }
 });
 
 function createBtn(className, type) {
@@ -98,4 +103,44 @@ function handleDelete(className, e) {
   e.stopPropagation();
   debug()(`[EVENT:DELETE:${className}]`);
   http.delete(`api/${className}/${selection.toString()}`);
+}
+
+function handleExportExcel(e) {
+  e.stopPropagation();
+  debug()(`[EVENT:EXPORT]`);
+  let t_now = new Intl.DateTimeFormat(navigator.language, {
+    year: "2-digit",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hourCycle: "h24",
+  })
+    .formatToParts()
+    .reduce((car, cdr) => {
+      car[cdr.type] = cdr.value;
+      return car;
+    }, {});
+  t_now = `${t_now.year}${t_now.month}${t_now.day}-${t_now.hour}${t_now.minute}${t_now.second}`;
+  http
+    .get("api", {
+      headers: {
+        Accept:
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,*/*",
+      },
+    })
+    .then((res) => res.blob())
+    .then((blob) => saveBlob(blob, `boptimus-${t_now}`));
+}
+
+function saveBlob(blob, filename) {
+  const urlObject = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = urlObject;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(urlObject);
 }
