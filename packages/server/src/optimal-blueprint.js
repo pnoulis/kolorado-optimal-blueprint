@@ -1,37 +1,17 @@
-import {
-  powerset_reverse,
-  count_powerset_permutations,
-  count_cardinality,
-} from "permute";
-import { debug } from "common";
+import { powerset_reverse } from "permute";
 
 function find_optimal_blueprints(target_shapes, source_blueprints, options) {
-  let target_shapes_unique = new Map();
-  let target_shapes_total_count = 0;
-  for (let i = 0; i < target_shapes.length; i++) {
-    target_shapes_unique.set(target_shapes[i].id, {
-      id: target_shapes[i].id,
-      name: target_shapes[i].name,
-      count:
-        target_shapes[i].count +
-        (target_shapes_unique.get(target_shapes[i].id)?.count || 0),
-    });
-    target_shapes_total_count += target_shapes[i].count;
-  }
-  target_shapes_unique = Array.from(target_shapes_unique.values());
-  //debug("target_shapes_unique")(target_shapes_unique);
-  //debug("target_shapes_total_count")(target_shapes_total_count);
+  const [target_shapes_unique, target_shapes_total_count] =
+    unique_shapes(target_shapes);
 
   const unique_capable_blueprints = filter_blueprints_with_shapes(
     target_shapes_unique,
     source_blueprints,
   );
-  //debug("unique_capable_blueprints")(unique_capable_blueprints);
   const capable_blueprints = match_target_shapes_count(
     target_shapes_unique,
     unique_capable_blueprints,
   );
-  //debug("capable_blueprints")(capable_blueprints);
 
   // The sorting is really important. It guarantees that when the
   // first permutation that does not fulfill the target_shapes_count
@@ -39,38 +19,25 @@ function find_optimal_blueprints(target_shapes, source_blueprints, options) {
   // better score. As such the algorithm should cease its operations
   // and return the result
   sort_blueprints_shapes_count_increasing(capable_blueprints);
-  //debug("sorted blueprints")(capable_blueprints);
-
-  //const cardinality = count_cardinality(capable_blueprints);
-  //const permutations = count_powerset_permutations(cardinality);
-  //debug("cardinality")(cardinality);
-  //debug("permutations")(permutations);
 
   let optimal_permutation_score = 1000000;
   let optimal_permutation;
 
   powerset_reverse(capable_blueprints, (permutation, _break) => {
-    permutation.shapes_total_count = count_shapes(
-      ...permutation.set.map((blueprint) => blueprint.value.shapes).flat(),
-    );
-
-    if (permutation.shapes_total_count < target_shapes_total_count)
-      return _break();
-
     // Score the permutation.
     // The lower the score the better.
     // This allows the algorithm to interpret 0 as the best possible score.
     // The default scoring function, considers the permutation with
     // the least amount of remainder shapes as optimal.
-    permutation.score = scoreByLeastShapeRemainder(
+    scoreByLeastShapeRemainder(
       target_shapes_unique,
+      target_shapes_total_count,
       permutation,
+      _break,
     );
-    //debug()(`permutation.score:${permutation.score}`);
 
     if (permutation.score < 0) return;
-
-    if (permutation.score === 0) {
+    else if (permutation.score === 0) {
       optimal_permutation_score = 0;
       optimal_permutation = permutation;
       _break();
@@ -79,36 +46,31 @@ function find_optimal_blueprints(target_shapes, source_blueprints, options) {
       optimal_permutation = permutation;
     }
   });
-  debug("optimal_permutation")(optimal_permutation);
 
-  let optimal_blueprints = new Map();
-  let blueprints_total_count = 0;
-  for (let i = 0; i < optimal_permutation.set.length; i++) {
-    ++blueprints_total_count;
-    optimal_blueprints.set(optimal_permutation.set[i].value.id, {
-      ...optimal_permutation.set[i].value,
-      count:
-        1 +
-        (optimal_blueprints.get(optimal_permutation.set[i].value.id)?.count ||
-          0),
-    });
-  }
-  optimal_blueprints = {
+  const optimal_blueprints_unique = unique_blueprints(
+    optimal_permutation.set.map((permutation) => permutation.value),
+  );
+  return {
+    target_shapes_unique: target_shapes_unique.map((shape) => ({
+      id: shape.id,
+      count: shape.count,
+    })),
+    optimal_blueprints_unique: optimal_blueprints_unique.map((blueprint) => ({
+      id: blueprint.id,
+      count: blueprint.count,
+    })),
+    shape_remainders_map: optimal_permutation.shapes_unique.map((shape) => ({
+      id: shape.id,
+      count: shape.count,
+    })),
     target_shapes_total_count,
     target_shapes_unique_count: target_shapes_unique.length,
-    blueprints_total_count,
-    blueprints_unique_count: unique_capable_blueprints.length,
-    shape_remainders_total: optimal_permutation.score,
-    shape_remainders_map: optimal_permutation.shapeRemainder,
-    target_shapes: target_shapes_unique,
-    source_blueprints,
-    optimal_blueprints: Array.from(optimal_blueprints.values()),
+    optimal_blueprints_total_count: optimal_permutation.set.length,
+    optimal_blueprints_unique_count: optimal_blueprints_unique.length,
+    remainder: optimal_permutation.remainder_total,
+    score: optimal_permutation.score,
   };
-
-  //debug("optimal_blueprints")(optimal_blueprints);
-  return optimal_blueprints;
 }
-
 function count_shapes(...shapes) {
   let shapes_count = 0;
   for (let i = 0; i < shapes.length; i++) {
@@ -116,7 +78,6 @@ function count_shapes(...shapes) {
   }
   return shapes_count;
 }
-
 function filter_shape(shape, ...blueprints) {
   const shapes = [];
   for (let i = 0; i < blueprints.length; i++)
@@ -125,7 +86,32 @@ function filter_shape(shape, ...blueprints) {
         shapes.push(blueprints[i].shapes[y]);
   return shapes;
 }
+function unique_shapes(shapes) {
+  const unique = new Map();
+  let total_count = 0;
+  for (let i = 0; i < shapes.length; i++) {
+    if (unique.has(shapes[i].id)) {
+      unique.get(shapes[i].id).count += shapes[i].count;
+      total_count += shapes[i].count;
+    } else {
+      unique.set(shapes[i].id, { ...shapes[i] });
+      total_count += shapes[i].count;
+    }
+  }
 
+  return [Array.from(unique.values()), total_count];
+}
+function unique_blueprints(blueprints) {
+  const unique = new Map();
+  for (let i = 0; i < blueprints.length; i++) {
+    if (unique.has(blueprints[i].id)) {
+      unique.get(blueprints[i].id).count++;
+    } else {
+      unique.set(blueprints[i].id, { ...blueprints[i], count: 1 });
+    }
+  }
+  return Array.from(unique.values());
+}
 function sort_blueprints_shapes_count_increasing(blueprints) {
   return blueprints.sort((a, b) => {
     const a_count = count_shapes(...a.shapes);
@@ -133,13 +119,16 @@ function sort_blueprints_shapes_count_increasing(blueprints) {
     return a_count === b_count ? 1 : a_count < b_count ? -1 : 1;
   });
 }
-
-function filter_blueprints_with_shapes(target_shapes, source_blueprints) {
+function filter_blueprints_with_shapes(
+  target_shapes_unique,
+  source_blueprints,
+) {
   const capable = [];
-  for (let i = 0; i < target_shapes.length; i++) {
+  for (let i = 0; i < target_shapes_unique.length; i++) {
     for (let y = 0; y < source_blueprints.length; y++) {
       for (let z = 0; z < source_blueprints[y].shapes.length; z++) {
-        if (source_blueprints[y].shapes[z].id !== target_shapes[i].id) continue;
+        if (source_blueprints[y].shapes[z].id !== target_shapes_unique[i].id)
+          continue;
         let unique = true;
         for (let x = 0; x < capable.length; x++) {
           if (capable[x].id !== source_blueprints[y].id) continue;
@@ -153,40 +142,79 @@ function filter_blueprints_with_shapes(target_shapes, source_blueprints) {
   }
   return capable;
 }
-
-function match_target_shapes_count(target_shapes, unique_capable_blueprints) {
+function match_target_shapes_count(
+  target_shapes_unique,
+  unique_capable_blueprints,
+) {
   let capable_blueprints = [...unique_capable_blueprints];
   let shapes_increment = 0;
   let shapes_count = 0;
-  for (let i = 0; i < target_shapes.length; i++) {
+  for (let i = 0; i < target_shapes_unique.length; i++) {
     shapes_increment = count_shapes(
-      ...filter_shape(target_shapes[i], ...capable_blueprints),
+      ...filter_shape(target_shapes_unique[i], ...capable_blueprints),
     );
     shapes_count = shapes_increment;
-    while (shapes_count < target_shapes[i].count) {
+    while (shapes_count < target_shapes_unique[i].count) {
       shapes_count += shapes_increment;
       capable_blueprints = capable_blueprints.concat(capable_blueprints);
     }
   }
   return capable_blueprints;
 }
-
-function scoreByLeastShapeRemainder(target_shapes, permutation) {
-  let shapeRemainder = [];
-  let remainder = 0;
-  let difference = 0;
-  for (let i = 0; i < target_shapes.length; i++) {
-    difference =
-      count_shapes(
-        ...filter_shape(
-          target_shapes[i],
-          ...permutation.set.map((element) => element.value),
-        ),
-      ) - target_shapes[i].count;
-    if (difference < 0) return -1;
-    shapeRemainder.push({ ...target_shapes[i], remainder: difference });
-    remainder += difference;
+function scoreByLeastShapeRemainder(
+  target_shapes_unique,
+  target_shapes_total_count,
+  permutation,
+  _break,
+) {
+  permutation.shapes_unique = [];
+  permutation.shapes_total_count = 0;
+  for (let i = 0; i < permutation.set.length; i++) {
+    const [unique, total_count] = unique_shapes(
+      permutation.shapes_unique.concat(
+        unique_shapes(permutation.set[i].value.shapes)[0],
+      ),
+    );
+    permutation.shapes_unique = unique;
+    permutation.shapes_total_count = total_count;
   }
-  permutation.shapeRemainder = shapeRemainder;
-  return remainder;
+  // no reason to go forth, since the first permutation that does not
+  // fullfill the target_shapes_total_count signals the end of all
+  // such possible permutations.
+  if (permutation.shapes_total_count < target_shapes_total_count)
+    return _break();
+
+  /* The blueprints capable of matching target_shapes_unique most
+   certainly will include shapes not included in the
+   target_shapes_unique. If these remainder blueprints were to be used
+   in the score, it is guaranteed that the score would never have a
+   chance of reaching 0. Since a score of 0 is used to put a stop to
+   the algorithm, it would mean that the algorithm would have to
+   exhaust all permutations until the first permutation that did not
+   satisfy the target_shapes_total_count. As such, shapes not included
+   in the target set are not included in the calculation of the score,
+   however they are tracked because the user most certainly would need
+   such information.
+   */
+  let remainder_target_total = 0; /* score, without shapes not included in the target set */
+  let remainder_total = 0; /* remainder, with shapes not included in the target set */
+
+  for (let i = 0; i < permutation.shapes_unique.length; i++) {
+    permutation.shapes_unique[i].score = permutation.shapes_unique[i].count;
+    for (let y = 0; y < target_shapes_unique.length; y++) {
+      if (target_shapes_unique[y].id !== permutation.shapes_unique[i].id)
+        continue;
+      permutation.shapes_unique[i].score =
+        permutation.shapes_unique[i].count > target_shapes_unique[y].count
+          ? permutation.shapes_unique[i].count - target_shapes_unique[y].count
+          : target_shapes_unique[y].count - permutation.shapes_unique[i].count;
+      remainder_target_total += permutation.shapes_unique[i].score;
+    }
+    remainder_total += permutation.shapes_unique[i].score;
+  }
+
+  permutation.remainder_total = remainder_total;
+  permutation.score = remainder_target_total;
 }
+
+export { find_optimal_blueprints };
