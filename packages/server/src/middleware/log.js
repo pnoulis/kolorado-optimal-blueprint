@@ -40,7 +40,7 @@ ${req.body ? prettyJson.render(req.body) : "{}"}`,
 HEADERS>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ${prettyJson.render(res.getHeaders())}
 BODY>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-${txt ? prettyJson.render(body) : type}
+${txt ? prettyJson.render(JSON.parse(body)) : type}
 `);
   });
   return next();
