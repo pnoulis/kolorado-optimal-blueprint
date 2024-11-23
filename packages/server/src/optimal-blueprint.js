@@ -51,18 +51,9 @@ function find_optimal_blueprints(target_shapes, source_blueprints, options) {
     optimal_permutation.set.map((permutation) => permutation.value),
   );
   return {
-    target_shapes_unique: target_shapes_unique.map((shape) => ({
-      id: shape.id,
-      count: shape.count,
-    })),
-    optimal_blueprints_unique: optimal_blueprints_unique.map((blueprint) => ({
-      id: blueprint.id,
-      count: blueprint.count,
-    })),
-    shape_remainders_map: optimal_permutation.shapes_unique.map((shape) => ({
-      id: shape.id,
-      count: shape.score,
-    })),
+    target_shapes_unique,
+    optimal_blueprints_unique,
+    shape_remainders_map: optimal_permutation.shapes_unique,
     target_shapes_total_count,
     target_shapes_unique_count: target_shapes_unique.length,
     optimal_blueprints_total_count: optimal_permutation.set.length,
