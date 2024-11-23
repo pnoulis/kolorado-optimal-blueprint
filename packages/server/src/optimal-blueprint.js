@@ -61,7 +61,7 @@ function find_optimal_blueprints(target_shapes, source_blueprints, options) {
     })),
     shape_remainders_map: optimal_permutation.shapes_unique.map((shape) => ({
       id: shape.id,
-      count: shape.count,
+      count: shape.score,
     })),
     target_shapes_total_count,
     target_shapes_unique_count: target_shapes_unique.length,

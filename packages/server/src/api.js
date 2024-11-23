@@ -1,13 +1,26 @@
 import { Router } from "express";
 import { db } from "./sqlite.js";
-import { Blueprint, Kerror, Shape, delay } from "common";
+import { Kerror, delay } from "common";
 import { createBlueprintsPage, createShapesPage } from "./pages.js";
 import { toExcel } from "./export-data.js";
 import { matchResourceRepresentationRequest } from "./middleware/matchResourceRepresentationRequest.js";
+import { find_optimal_blueprints } from "./optimal-blueprint.js";
 
 const api = Router();
 
-api.get("/optimal-blueprint", (req, res) => {});
+/**
+ * @param {BlueprintShape[]} req.body
+ */
+api.get("/optimal-blueprint", (req, res) => {
+  const targetShapes = req.body;
+  const sourceBlueprints = db.getBlueprints();
+  const optimalBlueprints = find_optimal_blueprints(
+    targetShapes,
+    sourceBlueprints,
+  );
+  res.set("Cache-Control", "no-cache");
+  res.status(200).send({ targetShapes, optimalBlueprints });
+});
 
 /**
  * @param {Object} req.params
@@ -50,7 +63,8 @@ api.get(
         shapes = db.getShapes();
     }
     switch (res.get("Content-Type").split(";")[0]) {
-      case "*/*": /* fall through */
+      case "*/*" /* fall through */:
+        res.set("Content-Type", "application/json");
       case "application/json":
         res.send({ blueprints, shapes });
         break;
