@@ -53,9 +53,11 @@ function find_optimal_blueprints(target_shapes, source_blueprints, options) {
   return {
     target_shapes_unique,
     optimal_blueprints_unique,
-    shape_remainders_map: optimal_permutation.shapes_unique,
+    optimal_shapes_remainder: optimal_permutation.shapes_unique,
     target_shapes_total_count,
     target_shapes_unique_count: target_shapes_unique.length,
+    optimal_shapes_total_count: optimal_permutation.shapes_total_count,
+    optimal_shapes_unique_count: optimal_permutation.shapes_unique.length,
     optimal_blueprints_total_count: optimal_permutation.set.length,
     optimal_blueprints_unique_count: optimal_blueprints_unique.length,
     remainder: optimal_permutation.remainder_total,
@@ -141,13 +143,17 @@ function match_target_shapes_count(
   let shapes_increment = 0;
   let shapes_count = 0;
   for (let i = 0; i < target_shapes_unique.length; i++) {
+    const blueprints_with_shapes = filter_blueprints_with_shapes(
+      [target_shapes_unique[i]],
+      unique_capable_blueprints,
+    );
     shapes_increment = count_shapes(
       ...filter_shape(target_shapes_unique[i], ...capable_blueprints),
     );
     shapes_count = shapes_increment;
     while (shapes_count < target_shapes_unique[i].count) {
       shapes_count += shapes_increment;
-      capable_blueprints = capable_blueprints.concat(capable_blueprints);
+      capable_blueprints.push(...blueprints_with_shapes);
     }
   }
   return capable_blueprints;
@@ -203,7 +209,6 @@ function scoreByLeastShapeRemainder(
     }
     remainder_total += permutation.shapes_unique[i].score;
   }
-
   permutation.remainder_total = remainder_total;
   permutation.score = remainder_target_total;
 }
