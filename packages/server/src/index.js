@@ -6,7 +6,11 @@ import { health } from "./health.js";
 import { logTransaction } from "./middleware/log.js";
 import { notFoundError, internalServerError } from "./middleware/errors.js";
 import { transformStaticAssetUrl } from "./middleware/transformStaticAssetUrl.js";
-import { createBlueprintsPage, createShapesPage } from "./pages.js";
+import {
+  createBlueprintsPage,
+  createHomePage,
+  createShapesPage,
+} from "./pages.js";
 
 const app = new express();
 
@@ -14,7 +18,15 @@ app.set("view engine", "ejs");
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(logTransaction);
-app.use("/api", api);
+app.use(
+  "/api",
+  (req, res, next) => {
+    res.set("cache-control", "no-store");
+    res.set("etag", "");
+    return next();
+  },
+  api,
+);
 app.use("/health", health);
 app.use(
   transformStaticAssetUrl,
@@ -24,6 +36,7 @@ app.use(
 app.all("*", notFoundError);
 app.use(internalServerError);
 
+debug()(`Created -> ${createHomePage()}`);
 debug()(`Created -> ${createShapesPage()}`);
 debug()(`Created -> ${createBlueprintsPage()}`);
 

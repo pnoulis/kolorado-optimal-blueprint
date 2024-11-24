@@ -10,6 +10,7 @@ function debug(title) {
     if (title) {
       console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
     }
+    return msg;
   };
 }
 

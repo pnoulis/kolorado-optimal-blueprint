@@ -48,10 +48,8 @@ sqlite3 $db_url < packages/db/db-seed.sql
 # Configure website
 cp -u packages/website/public/* $buildir
 cp -u packages/website/src/*.ejs $buildir
-# npx ejs --rm-whitespace packages/website/src/blueprints.ejs -f $buildir/blueprints.json > $buildir/blueprints.html
-# npx ejs --rm-whitespace packages/website/src/shapes.ejs -f $buildir/shapes.json > $buildir/shapes.html
-npx ejs --rm-whitespace packages/website/src/home.ejs > $buildir/index.html
 npx esbuild --bundle --target=esnext packages/website/src/main.js > $buildir/main.js
+npx esbuild --bundle --target=esnext packages/website/src/home.js > $buildir/home.js
 
 # Configure server
 cd packages/server

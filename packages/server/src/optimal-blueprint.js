@@ -1,6 +1,34 @@
 import { powerset_reverse } from "permute";
+import { get_t_locale_iso8601 } from "common";
+import { join } from "node:path";
+import { readdirSync } from "node:fs";
+const OPTIMAL_BLUEPRINT_FILENAME_PREFIX = "optimal-blueprint";
 
-function find_optimal_blueprints(target_shapes, source_blueprints, options) {
+function get_optimal_blueprint(optimal_blueprint_id) {
+  const files = readdirSync(process.env.PUBLICDIR, { encoding: "utf8" });
+  const optimal_blueprints = [];
+  const re_optimal_blueprint = new RegExp(
+    optimal_blueprint_id || OPTIMAL_BLUEPRINT_FILENAME_PREFIX,
+  );
+  for (let i = 0; i < files.length; i++) {
+    if (re_optimal_blueprint.test(files[i])) optimal_blueprints.push(files[i]);
+  }
+  return optimal_blueprints;
+}
+
+function make_optimal_blueprint_fileparts(optimal_blueprint_id) {
+  const parts = {
+    id: optimal_blueprint_id || get_t_locale_iso8601({ utc: true }).toString(),
+    dirname: process.env.PUBLICDIR,
+  };
+  parts.basename = OPTIMAL_BLUEPRINT_FILENAME_PREFIX + "-" + parts.id;
+  parts.path = join(parts.dirname, parts.basename);
+  parts.report = parts.path + ".txt";
+  parts.page = parts.path + ".html";
+  return parts;
+}
+
+function generate_optimal_blueprint(target_shapes, source_blueprints, options) {
   const [target_shapes_unique, target_shapes_total_count] =
     unique_shapes(target_shapes);
 
@@ -29,7 +57,7 @@ function find_optimal_blueprints(target_shapes, source_blueprints, options) {
     // This allows the algorithm to interpret 0 as the best possible score.
     // The default scoring function, considers the permutation with
     // the least amount of remainder shapes as optimal.
-    scoreByLeastShapeRemainder(
+    score_by_least_shape_remainder(
       target_shapes_unique,
       target_shapes_total_count,
       permutation,
@@ -158,7 +186,7 @@ function match_target_shapes_count(
   }
   return capable_blueprints;
 }
-function scoreByLeastShapeRemainder(
+function score_by_least_shape_remainder(
   target_shapes_unique,
   target_shapes_total_count,
   permutation,
@@ -213,4 +241,8 @@ function scoreByLeastShapeRemainder(
   permutation.score = remainder_target_total;
 }
 
-export { find_optimal_blueprints };
+export {
+  generate_optimal_blueprint,
+  get_optimal_blueprint,
+  make_optimal_blueprint_fileparts,
+};

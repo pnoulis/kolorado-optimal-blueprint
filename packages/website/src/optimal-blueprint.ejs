@@ -1,0 +1,89 @@
+<!--
+     Data dependency:
+     {
+       targetShapes: [ { id, name, count, } ],
+       optimalBlueprints: {
+           target_shapes_unique: [ { id, count } ],
+           optimal_blueprints_unique: [ { id, name, shapes: [ { id, name, count,} ] } ],
+           shape_remainders_map: [ { id, name, count, score } ],
+           target_shapes_total_count: number,
+           target_shapes_unique_count: number,
+           optimal_shapes_total_count: number,
+           optimal_shapes_unique_count: number,
+           optimal_blueprints_total_count: number,
+           optimal_blueprints_unique_count: number,
+           remainder: number,
+           score: number,
+       }
+     }
+-->
+<%- include('./head.ejs') -%>
+
+<body>
+    <section class="section-statistics">
+        <h1>statistics</h1>
+        <ul class="list-statistics">
+            <li class="statistics-item">
+                <span class="key">total number of requested shapes</span>
+                <span class="value"><%= optimalBlueprints.target_shapes_total_count %></span>
+            </li>
+            <li class="statistics-item">
+                <span class="key">unique number of requested shapes</span>
+                <span class="value"><%= optimalBlueprints.target_shapes_unique_count %></span>
+            </li>
+            <li class="statistics-item">
+                <span class="key">total number of blueprints </span>
+                <span class="value"><%= optimalBlueprints.optimal_blueprints_total_count %></span>
+            </li>
+            <li class="statistics-item">
+                <span class="key">unique number of blueprints </span>
+                <span class="value"><%= optimalBlueprints.optimal_blueprints_unique_count %></span>
+            </li>
+            <li class="statistics-item">
+                <span class="key">total number of shapes </span>
+                <span class="value"><%= optimalBlueprints.optimal_shapes_total_count %></span>
+            </li>
+            <li class="statistics-item">
+                <span class="key">unique number of shapes </span>
+                <span class="value"><%= optimalBlueprints.optimal_shapes_unique_count %></span>
+            </li>
+            <li class="statistics-item">
+                <span class="key">remainder number of shapes</span>
+                <span class="value"><%= optimalBlueprints.remainder %></span>
+            </li>
+        </ul>
+    </section>
+    <section class="section-target-shapes">
+        <h1>target shapes</h1>
+        <ul class="list-target-shapes">
+            <% for (let i = 0; i < optimalBlueprints.target_shapes_unique.length; i++) { %>
+            <li class="target-shape">
+                <span class="name"><%= optimalBlueprints.target_shapes_unique[i].name %></span>
+                <span class="count"><%= optimalBlueprints.target_shapes_unique[i].count %></span>
+            </li>
+            <% } %>
+        </ul>
+    </section>
+    <section class="section-optimal-blueprints">
+        <h1>optimal blueprints</h1>
+        <ul class="list-optimal-blueprints">
+            <% for (let i = 0; i < optimalBlueprints.optimal_blueprints_unique.length; i++) { %>
+            <li class="target-blueprint">
+                <span class="name"><%= optimalBlueprints.optimal_blueprints_unique[i].name %></span>
+                <span class="count"><%= optimalBlueprints.optimal_blueprints_unique[i].count %></span>
+            </li>
+            <% } %>
+        </ul>
+    </section>
+    <section class="section-remainders">
+        <h1>remainder shapes</h1>
+        <ul class="list-optimal-blueprints">
+            <% for (let i = 0; i < optimalBlueprints.optimal_shapes_remainder.length; i++) { %>
+            <li class="target-blueprint">
+                <span class="name"><%= optimalBlueprints.optimal_shapes_remainder[i].name %></span>
+                <span class="remainder"><%= optimalBlueprints.optimal_shapes_remainder[i].score %></span>
+            </li>
+            <% } %>
+        </ul>
+    </section>
+</body>

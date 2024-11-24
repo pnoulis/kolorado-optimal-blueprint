@@ -1,26 +1,74 @@
 import { Router } from "express";
 import { db } from "./sqlite.js";
-import { Kerror, delay } from "common";
-import { createBlueprintsPage, createShapesPage } from "./pages.js";
+import {
+  createBlueprintsPage,
+  createShapesPage,
+  createHomePage,
+  createOptimalBlueprintPage,
+  createOptimalBlueprintReport,
+} from "./pages.js";
 import { toExcel } from "./export-data.js";
 import { matchResourceRepresentationRequest } from "./middleware/matchResourceRepresentationRequest.js";
-import { find_optimal_blueprints } from "./optimal-blueprint.js";
+import {
+  generate_optimal_blueprint,
+  get_optimal_blueprint,
+  make_optimal_blueprint_fileparts,
+} from "./optimal-blueprint.js";
+import { join } from "node:path";
 
 const api = Router();
 
 /**
  * @param {BlueprintShape[]} req.body
  */
-api.get("/optimal-blueprint", (req, res) => {
+api.post("/optimal-blueprints?", (req, res) => {
   const targetShapes = req.body;
   const sourceBlueprints = db.getBlueprints();
-  const optimalBlueprints = find_optimal_blueprints(
+  const optimalBlueprints = generate_optimal_blueprint(
     targetShapes,
     sourceBlueprints,
   );
-  res.set("Cache-Control", "no-cache");
-  res.status(200).send({ targetShapes, optimalBlueprints });
+  const data = { targetShapes, optimalBlueprints };
+  const { id, basename, report, page } = make_optimal_blueprint_fileparts();
+  createOptimalBlueprintPage(data, page);
+  createOptimalBlueprintReport(optimalBlueprints, report);
+  res.status(200).send({
+    targetShapes,
+    optimalBlueprints,
+    optimalBlueprintId: id,
+    optimalBlueprintLink: basename,
+  });
 });
+
+api.get(
+  "/optimal-blueprints?/:id",
+  matchResourceRepresentationRequest(["text/html", "text/plain", "*/*"]),
+  (req, res) => {
+    const optimalBlueprint = make_optimal_blueprint_fileparts(req.params.id);
+
+    if (!get_optimal_blueprint(optimalBlueprint.id).length) {
+      return res.status(404).render(join(process.env.PUBLICDIR, "404"), {
+        url: req.originalUrl,
+      });
+    }
+    switch (res.get("Content-Type").split(";")[0]) {
+      case "*/*" /* fall through */:
+        res.set("Content-Type", "text/html");
+      case "text/html":
+        res.sendFile(optimalBlueprint.page, {
+          cacheControl: false,
+          etag: false,
+        });
+        break;
+      case "text/plain":
+        res.sendFile(optimalBlueprint.report, {
+          cacheControl: false,
+          etag: false,
+        });
+        break;
+    }
+  },
+);
 
 /**
  * @param {Object} req.params
@@ -69,7 +117,6 @@ api.get(
         res.send({ blueprints, shapes });
         break;
       case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-        res.set("Cache-Control", "no-cache");
         toExcel(blueprints, shapes)
           .on("data", (data) => res.write(data))
           .on("close", () => res.end());
@@ -122,7 +169,10 @@ api.post("/shapes", (req, res) => {
     }
   }
 
-  if (created.length) createShapesPage();
+  if (created.length) {
+    createShapesPage();
+    createHomePage();
+  }
   res.status(notCreated.length ? 207 : 201).send([...created, ...notCreated]);
 });
 
@@ -182,6 +232,7 @@ api.delete("/shapes", (req, res) => {
   if (deleted.length) {
     createShapesPage();
     createBlueprintsPage();
+    createHomePage();
   }
   res.status(notDeleted.length ? 207 : 200).send([...deleted, ...notDeleted]);
 });
