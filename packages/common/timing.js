@@ -2,7 +2,7 @@ import { performance } from "node:perf_hooks";
 
 const timings = new Map();
 
-const executionTime = {
+const timing = {
   start: (label = "default") => {
     if (timings.has(label)) throw new Error(`Duplicate timing: ${label}`);
     return timings.set(label, performance.now());
@@ -15,4 +15,4 @@ const executionTime = {
   },
 };
 
-export { executionTime };
+export { timing };
