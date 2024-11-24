@@ -1,10 +1,13 @@
-import { find_optimal_blueprints } from "../packages/server/src/optimal-blueprint.js";
+import { generate_optimal_blueprint } from "../packages/server/src/optimal-blueprint.js";
 import { exampleInputs } from "./example-input.js";
+import { executionTime } from "common";
 
-const optimal_blueprints = find_optimal_blueprints(
+executionTime.start();
+const optimal_blueprints = generate_optimal_blueprint(
   exampleInputs[0].target_shapes,
   exampleInputs[0].source_blueprints,
 );
+console.log(executionTime.stop());
 console.log(optimal_blueprints); /* ->
 {
   target_shapes_unique: [
