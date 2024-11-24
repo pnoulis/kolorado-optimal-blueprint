@@ -29,8 +29,18 @@ api.post("/optimal-blueprints?", (req, res) => {
     sourceBlueprints,
   );
   const { id, basename, report, page } = make_optimal_blueprint_fileparts();
-  createOptimalBlueprintPage(optimalBlueprints, page);
-  createOptimalBlueprintReport(optimalBlueprints, report);
+  debug()(
+    `Created -> ${createOptimalBlueprintPage(
+      { ...optimalBlueprints, optimal_blueprint_id: id },
+      page,
+    )}`,
+  );
+  debug()(
+    `Created -> ${createOptimalBlueprintReport(
+      { ...optimalBlueprints, optimal_blueprint_id: id },
+      report,
+    )}`,
+  );
   res.status(200).send({
     targetShapes,
     optimalBlueprints,

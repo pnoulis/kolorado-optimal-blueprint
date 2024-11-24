@@ -1,6 +1,7 @@
 <!--
      Data dependency:
      {
+     optimal_blueprint_id,
      target_shapes_unique: [ { id, count } ],
      optimal_blueprints_unique: [ { id, name, shapes: [ { id, name, count,} ] } ],
      shape_remainders_map: [ { id, name, count, score } ],
@@ -18,6 +19,7 @@
 
 <body>
     <main>
+        <button id="btn-optimal-blueprint-download" value="<%= optimal_blueprint_id %>">download</button>
         <section class="section-statistics">
             <h1>statistics</h1>
             <ul class="list-statistics">

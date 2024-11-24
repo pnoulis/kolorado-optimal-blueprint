@@ -50,6 +50,7 @@ cp -u packages/website/public/* $buildir
 cp -u packages/website/src/*.ejs $buildir
 npx esbuild --bundle --target=esnext packages/website/src/main.js > $buildir/main.js
 npx esbuild --bundle --target=esnext packages/website/src/home.js > $buildir/home.js
+npx esbuild --bundle --target=esnext packages/website/src/optimal-blueprint.js > $buildir/optimal-blueprint.js
 
 # Configure server
 cd packages/server

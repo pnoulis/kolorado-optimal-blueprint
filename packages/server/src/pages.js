@@ -98,6 +98,7 @@ TARGET SHAPES
   }
 
   writeFileSync(destination, str, { encoding: "utf8" });
+  return destination;
 }
 
 export {
