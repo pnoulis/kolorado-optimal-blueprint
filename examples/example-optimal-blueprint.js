@@ -1,6 +1,6 @@
 import { generate_optimal_blueprint } from "../packages/server/src/optimal-blueprint.js";
 import { exampleInputs } from "./example-input.js";
-import { executionTime } from "common";
+import { executionTime } from "common/executionTime.js";
 
 executionTime.start();
 const optimal_blueprints = generate_optimal_blueprint(
