@@ -15,12 +15,17 @@
   },
   "exports": {},
   "scripts": {},
-  "workspaces": [
-    "packages/common",
-    "packages/server",
-    "packages/website"
-  ],
   "dependencies": {
+    "better-sqlite3": "11.5.0",
+    "ejs": "3.1.10",
+    "express": "4.21.1",
+    "permute": "file:lib/permute",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
+  },
+  "devDependencies": {
+    "@types/ejs": "^3.1.5",
+    "@types/express": "^5.0.0",
+    "esbuild": "^0.24.0",
+    "prettyjson": "^1.2.5"
   }
 }

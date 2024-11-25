@@ -1,5 +1,5 @@
-import { powerset_reverse } from "permute";
-import { get_t_locale_iso8601 } from "common";
+import { powerset_reverse } from "/lib/permute/dist/permute.mjs";
+import { get_t_locale_iso8601 } from "/src/common/locale.js";
 import { join } from "node:path";
 import { readdirSync } from "node:fs";
 const OPTIMAL_BLUEPRINT_ROOTDIR = join(

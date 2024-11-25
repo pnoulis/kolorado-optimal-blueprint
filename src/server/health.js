@@ -1,6 +1,6 @@
 import { Router } from "express";
 import * as Path from "node:path";
-import { delay } from "common";
+import { delay } from "/src/common/delay.js";
 
 const health = new Router();
 
