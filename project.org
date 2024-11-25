@@ -1,14 +1,20 @@
+* resources
+** capturing the input elements of a form, on submit
+https://stackoverflow.com/questions/10955745/get-values-from-submitted-form
+https://developer.mozilla.org/en-US/docs/Learn/Forms/Sending_forms_through_JavaScript
+** document.createElement(tagName)
+https://developer.mozilla.org/en-US/docs/Web/API/Document/createElement
+** element.appendChild(node)
+https://developer.mozilla.org/en-US/docs/Web/API/Node/appendChild
+** element.parentNode
+** element.removeChild(node)
+** element.replaceChildren(...node)
 * requirements
-** add new designs
-** persist designs on disk
-** find optimal design set
-** blueprint
-- id
-- triangles
-- squares
-- circles
+** add new blueprints
+** persist blueprints on disk
+** find optimal blueprint set
 
-** expected information
+Expected information:
 
 - count of each blueprint
 - total count of blueprints
@@ -36,3 +42,87 @@ valid = blue circle
 invalid = orange/red circle
 deleted = grey/black circle
 
+** Building the optimal blueprints input
+
+a select input. The user selects the shape.
+next to it a count input. The user specifies the number of shapes.
+next to the select input and count input component. lets call it.
+
+form-optimal-blueprints
+
+contains X shape components and an add-shape component
+
+where each shape component contains 1 pair of:
+
+input-shape
+   option-shape
+   option-shape
+input-count
+   label key
+   input value
+
+
+The add-shape component is always positioned at the end of the
+available space of the form-optimal-blueprints component.
+
+it is composed of an image of a plus sign.
+Clicking it add another Shape component to the
+form-optimal-blueprints, positioned right before the add-shape component.
+
+* Caching strategy
+Resources that are not generated dynamically (static resources) use
+the following cache strategy:
+
+- Cache-Control: public, max-age: 1 year, immutable
+
+These resources are placed at: $(PUBLICDIR)/static
+
+Resources that are subject to change such as rendered pages use the
+following cache strategy:
+
+- ETag: checksum
+- Cache-Control: no-cache
+
+These resources are placed at: $(PUBLICDIR)/
+
+* Tickets
+** DONE User gets all blueprints
+** DONE User gets one blueprint based on ID
+** DONE User gets one blueprint based on Name
+** DONE User gets all shapes
+** DONE User gets one shape based on ID
+** DONE User gets one shape based on Name
+** DONE User creates a shape
+** DONE User deletes a shape
+*** Proposal 1
+Deleting a shape should not remove it from the database.
+
+This is to prevent loss of information in the Blueprint_Shape and
+Blueprint tables.
+
+Specifically, I want a Shape deletion to keep the Shape in the
+database so that a retrieval of Blueprints contains the deleted shape.
+
+This allows me to offer the User a comprehensive picture of the state
+of the program. The User will know, that a Blueprint has had one of
+its Shapes deleted.
+*** Proposal 2
+
+The User is not allowed to delete a Shape if it is used by a
+Blueprint.
+
+In order for the User to be allowed to delete the Shape, no Blueprint
+must exist that contains the Shape, effectively forcing him to first
+delete the Blueprint, then the Shape.
+
+If I were to implement this proposal, I could omit the use of States
+in both Blueprint and Shape; simplifying the codebase.
+
+** DONE User creates blueprint
+** DONE User deletes a blueprint
+** DONE User requests optimal blueprints
+** DONE User downloads an optimal blueprint
+** TODO User deletes optimal blueprint
+** TODO optimal blueprint cache is cleared
+** TODO render html errors client side
+** TODO sqlite function for CRUD operations on optimal blueprint
