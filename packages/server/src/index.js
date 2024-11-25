@@ -18,19 +18,20 @@ app.set("view engine", "ejs");
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(logTransaction);
-app.use(
-  "/api",
-  (req, res, next) => {
-    res.set("cache-control", "no-store");
-    res.set("etag", "");
-    return next();
-  },
-  api,
-);
+app.use("/api", api);
 app.use("/health", health);
 app.use(
   transformStaticAssetUrl,
-  express.static(process.env.PUBLICDIR, { maxAge: "1y" }),
+  express.static(process.env.PUBLICDIR, {
+    cacheControl: false,
+    maxAge: "1y",
+    etag: true,
+    immutable: true,
+    lastModified: false,
+    setHeaders: (res) => {
+      res.set("Cache-Control", "public, max-age=33155, immutable");
+    },
+  }),
 );
 
 app.all("*", notFoundError);

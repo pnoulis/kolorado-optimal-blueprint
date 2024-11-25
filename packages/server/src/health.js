@@ -9,6 +9,15 @@ health.all("/", (req, res) => {
     .status(req.body.status || req.query.status || 200)
     .send({ ...req.body, ...req.query });
 });
+
+health.all("/config", (req, res) => {
+  debug("URL")(process.env.URL);
+  debug("BASENAME")(process.env.BASENAME);
+  res.status(200).send({
+    url: process.env.URL,
+    basename: process.env.BASENAME,
+  });
+});
 health.all("/fail", (req, res) => {
   res
     .status(req.body.status || req.query.status || 500)

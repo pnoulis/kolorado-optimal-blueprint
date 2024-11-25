@@ -17,7 +17,15 @@ CREATE TABLE IF NOT EXISTS blueprint_shape (
   FOREIGN KEY (shape_id) REFERENCES shape(id)
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_name ON shape (name);
-CREATE UNIQUE INDEX IF NOT EXISTS idx_name ON blueprint (name);
+CREATE TABLE IF NOT EXISTS optimal_blueprint (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL UNIQUE,
+  created_at TEXT, -- unix timestamp
+  data TEXT
+  );
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_ob_name ON optimal_blueprint (name);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_shape_name ON shape (name);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_blueprint_name ON blueprint (name);
 CREATE INDEX IF NOT EXISTS idx_blueprint_id on blueprint_shape (blueprint_id);
 CREATE INDEX IF NOT EXISTS idx_shape_id on blueprint_shape (shape_id);

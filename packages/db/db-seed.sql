@@ -23,4 +23,3 @@ VALUES (1, 1, 1), -- Blueprint A, 1 Circle
        (3, 3, 3), -- Blueprint C, 3 Triangles
        (4, 1, 5), -- Blueprint D, 5 Triangles
        (5, 4, 1); -- Blueprint E, 1 Diamond
-

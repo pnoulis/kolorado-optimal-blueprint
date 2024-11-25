@@ -2,10 +2,14 @@ import { powerset_reverse } from "permute";
 import { get_t_locale_iso8601 } from "common";
 import { join } from "node:path";
 import { readdirSync } from "node:fs";
+const OPTIMAL_BLUEPRINT_ROOTDIR = join(
+  process.env.PUBLICDIR,
+  "optimal-blueprints",
+);
 const OPTIMAL_BLUEPRINT_FILENAME_PREFIX = "optimal-blueprint";
 
 function get_optimal_blueprint(optimal_blueprint_id) {
-  const files = readdirSync(process.env.PUBLICDIR, { encoding: "utf8" });
+  const files = readdirSync(OPTIMAL_BLUEPRINT_ROOTDIR, { encoding: "utf8" });
   const optimal_blueprints = [];
   const re_optimal_blueprint = new RegExp(
     optimal_blueprint_id || OPTIMAL_BLUEPRINT_FILENAME_PREFIX,

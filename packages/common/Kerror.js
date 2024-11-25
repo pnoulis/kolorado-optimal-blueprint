@@ -16,7 +16,7 @@ class Kerror extends Error {
             defaults.statusText ||
             cause?.message ||
             cause?.statusText,
-      { cause: runtime instanceof Error ? runtime : cause },
+      { cause: runtime.cause || cause },
     );
     this.name = defaults.name;
     this.errno =
@@ -29,10 +29,26 @@ class Kerror extends Error {
     this.status = runtime?.status || defaults.status || cause?.status;
     this.statusText =
       runtime?.statusText || defaults.statusText || cause?.statusText;
-    Error.captureStackTrace(this, this.constructor);
-    const lines = this.stack.split("\n");
-    this.stack = [lines[0], ...lines.slice(2)].join("\n");
+
+    let lines;
+    if (runtime instanceof Error) {
+      const lines = runtime.stack.split("\n");
+      this.stack = lines.join("\n");
+    } else {
+      const lines = this.stack.split("\n");
+      this.stack = [lines[0], ...lines.slice(2)].join("\n");
+    }
     return this;
+  }
+
+  toJson() {
+    return {
+      message: this.message,
+      cause: this.cause.message || this.cause,
+      errno: this.errno,
+      status: this.status,
+      statusText: this.statusText,
+    };
   }
 
   /* Client Errors (400) */

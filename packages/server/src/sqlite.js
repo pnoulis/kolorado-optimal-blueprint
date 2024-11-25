@@ -1,10 +1,9 @@
-import { Kerror } from "common";
 import sqlite from "better-sqlite3";
 
 /**
  * Shape
  * @typedef {Object} Shape
- * @property {string} id
+ * @property {number} id
  * @property {string} name
  */
 
@@ -18,9 +17,18 @@ import sqlite from "better-sqlite3";
 /**
  * Blueprint
  * @typedef {Object} Blueprint
- * @property {string} id
+ * @property {number} id
  * @property {string} name
  * @property {BlueprintShape[]} shapes
+ */
+
+/**
+ * OptimalBlueprint
+ * @typedef {Object} OptimalBlueprint
+ * @property {number} id
+ * @property {string} name
+ * @property {Date} created_at
+ * @property {string} data
  */
 
 /**
@@ -231,6 +239,26 @@ WHERE blueprint.${key} IN (${parameters.slice(1)})
         : key === "blueprint_id"
           ? oneBlueprintId.all(blueprintShapes)
           : oneShapeId.all(blueprintShapes);
+    };
+  })(),
+
+  /**
+   * Create optimal blueprint
+   * @param {OptimalBlueprint} optimalBlueprint
+   * @returns {SqliteResponse}
+   */
+  createOptimalBlueprint: (() => {
+    const one = _db.prepare(`INSERT INTO optimal_blueprint
+(name, created_at, data)
+VALUES (@name, @created_at, @data)`);
+    return function (optimalBlueprint) {
+      return one.run(optimalBlueprint);
+    };
+  })(),
+  getOptimalBlueprints: (() => {
+    const all = _db.prepare("SELECT * FROM optimal_blueprint");
+    return function (optimalBlueprints) {
+      if (!optimalBlueprints) return all.all();
     };
   })(),
 };

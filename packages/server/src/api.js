@@ -14,6 +14,7 @@ import {
   get_optimal_blueprint,
   make_optimal_blueprint_fileparts,
 } from "./optimal-blueprint.js";
+import { timing } from "common/timing.js";
 import { join } from "node:path";
 
 const api = Router();
@@ -24,11 +25,20 @@ const api = Router();
 api.post("/optimal-blueprints?", (req, res) => {
   const targetShapes = req.body;
   const sourceBlueprints = db.getBlueprints();
+
+  timing.start();
   const optimalBlueprints = generate_optimal_blueprint(
     targetShapes,
     sourceBlueprints,
   );
+  optimalBlueprints.executionTime = timing.stop();
+  optimalBlueprints.created_at = new Date().toISOString();
   const { id, basename, report, page } = make_optimal_blueprint_fileparts();
+  db.createOptimalBlueprint({
+    name: id,
+    created_at: Date.now().toFixed(),
+    data: JSON.stringify(optimalBlueprints),
+  });
   debug()(
     `Created -> ${createOptimalBlueprintPage(
       { ...optimalBlueprints, optimal_blueprint_id: id },
@@ -49,10 +59,33 @@ api.post("/optimal-blueprints?", (req, res) => {
   });
 });
 
+// api.delete("/optimal-blueprints?", (req, res) => {
+//   const optimalBlueprints = [req.body.optimalBlueprints || req.body].flat();
+//   const KEY = req.body.key || "id";
+//   const deleted = [];
+//   const notDeleted = [];
+// });
+
 api.get(
   "/optimal-blueprints?/:id",
-  matchResourceRepresentationRequest(["text/html", "text/plain", "*/*"]),
+  matchResourceRepresentationRequest([
+    "application/json",
+    "text/html",
+    "text/plain",
+    "*/*",
+  ]),
   (req, res) => {
+    if (req.params.id === "all")
+      return res
+        .type("json")
+        .status(200)
+        .send(
+          get_optimal_blueprint().map((blueprintBasename) => {
+            const optimalBlueprintId = blueprintBasename
+              .split("-")[3]
+              .split(".")[0];
+          }),
+        );
     const optimalBlueprint = make_optimal_blueprint_fileparts(req.params.id);
 
     if (!get_optimal_blueprint(optimalBlueprint.id).length) {
