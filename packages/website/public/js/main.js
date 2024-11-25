@@ -4,9 +4,20 @@ import { http } from "./http.js";
 
 const loading = debug("loading...");
 const selection = [];
+const page = document.location.pathname;
+debug('page')(page);
 
 window.addEventListener("DOMContentLoaded", () => {
   loading("done!");
+
+  switch (page) {
+    case "/":
+      break;
+    case "/blueprints":
+      break;
+    case "/shapes":
+      break;
+  }
 
   const shapes = document.querySelectorAll(".shape");
   for (let i = 0; i < shapes?.length; i++) {

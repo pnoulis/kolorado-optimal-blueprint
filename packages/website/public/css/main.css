@@ -5,3 +5,7 @@
 #dialog-event-delete {
     
 }
+
+button[value="export"] {
+    background-color: blue;
+}
