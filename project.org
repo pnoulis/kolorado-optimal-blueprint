@@ -126,3 +126,4 @@ in both Blueprint and Shape; simplifying the codebase.
 ** TODO optimal blueprint cache is cleared
 ** TODO render html errors client side
 ** TODO sqlite function for CRUD operations on optimal blueprint
+** DONE Configure and Build the package

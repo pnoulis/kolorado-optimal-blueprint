@@ -1,0 +1,264 @@
+#!/bin/make
+
+##################################################
+# Make config
+##################################################
+.DELETE_ON_ERROR:
+.SECONDEXPANSION:
+.EXPORT_ALL_VARIABLES:
+SHELL							:= IN_BASH
+.DEFAULT_GOAL			:= all
+
+##################################################
+# App description
+##################################################
+PKG_AUTHOR_NAME				= IN_PKG_AUTHOR_NAME
+PKG_AUTHOR_ID					= IN_PKG_AUTHOR_ID
+PKG_AUTHOR_EMAIL			= IN_PKG_AUTHOR_EMAIL
+PKG_AUTHOR_HOME_URL		= IN_PKG_AUTHOR_HOME_URL
+PKG_NAME							= IN_PKG_NAME
+PKG_ID								= IN_PKG_ID
+PKG_PRETTY_NAME				= IN_PKG_PRETTY_NAME
+PKG_TARNAME						= IN_PKG_TARNAME
+PKG_VERSION						= IN_PKG_VERSION
+PKG_VERSION_ID				= IN_PKG_VERSION_ID
+PKG_VERSION_CODENAME	= IN_PKG_VERSION_CODENAME
+PKG_REPOSITORY_TYPE		= IN_PKG_REPOSITORY_TYPE
+PKG_REPOSITORY_DOMAIN	= IN_PKG_REPOSITORY_DOMAIN
+PKG_REPONAME					= IN_PKG_REPONAME
+PKG_REPOSITORY_PATH		= IN_PKG_REPOSITORY_PATH
+PKG_REPOSITORY_URL		= IN_PKG_REPOSITORY_URL
+PKG_HOME_URL					= IN_PKG_HOME_URL
+PKG_DOCUMENTATION_URL	= IN_PKG_DOCUMENTATION_URL
+PKG_BUG_REPORT_url		= IN_PKG_BUG_REPORT_URL
+PKG_SUPPORT_URL				= IN_PKG_SUPPORT_URL
+
+##################################################
+# Program name transformation
+##################################################
+program_name					= IN_PROGRAM_NAME
+program_vname					= IN_PROGRAM_VNAME
+
+##################################################
+# Installation directories
+##################################################
+# gnu prefix directories
+PREFIX						= IN_PREFIX
+EXEC_PREFIX				= IN_EXEC_PREFIX
+BINDIR						= IN_BINDIR
+SBINDIR						= IN_SBINDIR
+LIBEXECDIR				= IN_LIBEXECDIR
+DATAROOTDIR				= IN_DATAROOTDIR
+DATADIR						= IN_DATADIR
+SYSCONFDIR				= IN_SYSCONFDIR
+SHAREDSTATEDIR		= IN_SHAREDSTATEDIR
+LOCALSTATEDIR			= IN_LOCALSTATEDIR
+RUNSTATEDIR				= IN_RUNSTATEDIR
+INCLUDEDIR				= IN_INCLUDEDIR
+OLDINCLUDEDIR			= IN_OLDINCLUDEDIR
+DOCDIR						= IN_DOCDIR
+INFODIR						= IN_INFODIR
+HTMLDIR						= IN_HTMLDIR
+DVIDIR						= IN_DVIDIR
+PDFDIR						= IN_PDFDIR
+PSDIR							= IN_PSDIR
+LIBDIR						= IN_LIBDIR
+LOCALEDIR					= IN_LOCALEDIR
+MANDIR						= IN_MANDIR
+# Derived directories
+TMPDIR						= IN_TMPDIR
+TMPDIR_PERSISTENT	= IN_TMPDIR_PERSISTENT
+STATEDIR					= IN_STATEDIR
+CACHEDIR					= IN_CACHEDIR
+LOGDIR						= IN_LOGDIR
+SPOOLDIR					= IN_SPOOLDIR
+LOCKDIR						= IN_LOCKDIR
+DESKTOPDIR				= IN_DESKTOPDIR
+ICONDIR						= IN_ICONDIR
+METAINFODIR				=	IN_METAINFODIR
+
+##################################################
+# Tools
+##################################################
+MAKE		= IN_MAKE
+M4			= IN_M4
+CHMOD		= IN_CHMOD
+CHOWN		= IN_CHOWN
+JQ			= IN_JQ
+M4			= IN_M4
+CP			= IN_CP
+RM			= IN_RM
+CAT			= IN_CAT
+MKDIR		= IN_MKDIR
+MV			= IN_MV
+SQLITE3 = IN_SQLITE3
+NODE    = IN_NODE
+
+##################################################
+# input directories
+##################################################
+SRCDIR_TOP			= IN_SRCDIR
+SRCDIR_TOP_ABS	= IN_SRCDIR_ABS
+SRCDIR					= $(SRCDIR_TOP)/src
+SRCDIR_ABS			= $(SRCDIR_TOP_ABS)/src
+PUBLICDIR       = $(SRCDIR)/website
+
+##################################################
+# input files
+##################################################
+MACROSFILE		= $(BUILDIR_TOP)/config.macros.m4
+CONFIGFILE		= $(BUILDIR_TOP)/configure
+CONFIGENVFILE = $(BUILDIR_TOP)/config.env
+
+##################################################
+# output directories
+##################################################
+BUILDIR_TOP			= IN_BUILDIR
+BUILDIR_TOP_ABS	= IN_BUILDIR_ABS
+BUILDIR					= $(BUILDIR_TOP)/IN_BUILDIR_BASENAME
+BUILDIR_ABS			= $(BUILDIR_TOP_ABS)/IN_BUILDIR_BASENAME
+DISTDIR					= $(BUILDIR_TOP)/IN_DISTDIR_BASENAME
+DISTDIR_ABS			= $(BUILDIR_TOP_ABS)/IN_DISTDIR_BASENAME
+
+##################################################
+# output files
+##################################################
+
+##################################################
+# Misc
+##################################################
+colon = :
+VPATH = tmp
+
+# Options
+MODE			= IN_MODE
+NODE_ENV	= IN_MODE
+DOMAIN    = IN_URL_HOSTNAME
+PORT			= IN_URL_PORT
+ORIGIN		= IN_URL_ORIGIN
+PATH			= IN_URL_PATH
+URL				= $(SERVER_ORIGIN)$(SERVER_PATH)
+DB_URL		= IN_DB_URL
+
+##################################################
+# Default target
+##################################################
+all: dev
+
+dev: build
+	$(NODE) $(BUILDIR)/index.js
+
+##################################################
+# Build
+##################################################
+build: $(DB_URL)
+	$(NODE) ./esbuild.config.js
+
+$(DB_URL): $(SRCDIR)/db/db-create.sql $(SRCDIR)/db/db-seed.sql | $(dir $(DB_URL))
+	$(RM) -f $(DB_URL)
+	$(SQLITE3) $@ < $(SRCDIR)/db/db-create.sql
+	$(SQLITE3) $@ < $(SRCDIR)/db/db-seed.sql
+
+$(dir $(DB_URL)):
+	$(MKDIR) -p $@
+
+$(BUILDIR_ABS):
+	$(MKDIR) -p $@
+
+##################################################
+# Release
+##################################################
+release:
+
+##################################################
+# Distribute
+##################################################
+dist: archive?=zip
+dist: dist.$$(archive)
+
+##################################################
+# Package
+##################################################
+package: archive?=zip
+package: $(DISTDIR)/$(PKG_TARNAME).$$(archive)
+
+$(DISTDIR)/$(PKG_TARNAME).zip: $(DISTDIR)/$(PKG_TARNAME)
+	cd $(DISTDIR); zip -r $(PKG_TARNAME).zip $(PKG_TARNAME)
+
+$(DISTDIR)/$(PKG_TARNAME): build
+	mkdir -p $@
+
+##################################################
+# Install
+##################################################
+install:
+
+##################################################
+# Uninstall
+##################################################
+uninstall:
+
+##################################################
+# Update
+##################################################
+update:
+
+##################################################
+# clean
+##################################################
+clean:
+	-$(RM) -fr $(DISTDIR)
+	-$(RM) -fr $(BUILDIR)
+
+##################################################
+# distclean
+##################################################
+distclean: clean
+	-$(RM) -f *.log
+	-$(RM) -f .#*
+	-$(RM) -f config.*
+	-$(RM) -f Makefile
+	-$(RM) -fr node_modules
+	-$(RM) -f package-lock.json
+
+.PHONY: scratch
+scratch:
+	node tmp/scratch.js
+
+##################################################
+# misc
+##################################################
+.DEFAULT:
+	@if [ ! -f "$<" ]; then echo "Missing file -> $${file:-$<}"; exit 1; fi
+
+
+##################################################
+# directories
+##################################################
+
+##################################################
+# help
+##################################################
+help:
+	@cat ./Makefile | grep -i --color=auto 'phony' | cut -d ' ' -f2- | tail --lines=+3
+
+# Software development
+.PHONY: run # Read dotenvfile and run $target or tmp/scratch.js
+.PHONY: dev # Develop application
+.PHONY: build # Build application
+.PHONY: test # Test application
+# Software distribution
+.PHONY: release # Create a new version
+.PHONY: dist # Distribute source tree
+.PHONY: package # Distribute build
+# Software package
+.PHONY: install # Install package
+.PHONY: uninstall # Uninstall package
+.PHONY: update # Update package
+# Cleaning
+.PHONY: clean # Remove files created by ./make
+.PHONY: distclean # Remove files created by ./configure
+# Misc
+.PHONY: help # Display a short description about each Makefile target's function
+.PHONY: dotenv # Write environment into .env
+.PHONY: all # Default target

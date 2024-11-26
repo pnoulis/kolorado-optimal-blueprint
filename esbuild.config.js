@@ -14,7 +14,7 @@ if (process.env.NODE_ENV === "production") {
   esbuild.build({
     bundle: true,
     entryPoints: ["src/server/index.js"],
-    outfile: "dist/out.js",
+    outdir: process.env.DISTDIR,
     plugins: [transformAbsoluteModuleImports],
     minify: true,
     treeShaking: true,
@@ -27,7 +27,7 @@ if (process.env.NODE_ENV === "production") {
   esbuild.build({
     bundle: true,
     entryPoints: ["src/server/index.js"],
-    outfile: "dist/out-dev.js",
+    outdir: process.env.BUILDIR,
     plugins: [transformAbsoluteModuleImports],
     minify: false,
     treeShaking: false,

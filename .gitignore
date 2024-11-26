@@ -4,6 +4,7 @@ cloud-storage
 config.env
 config.log
 config.macros.m4
+Makefile
 
 # transient files
 tmp/
