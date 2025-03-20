@@ -11,21 +11,21 @@ SHELL							:= __BASH__
 ##################################################
 # Application information
 ##################################################
-export APP_AUTHOR_NAME				= '__APP_AUTHOR_NAME__'
-export APP_AUTHOR_ID					= '__APP_AUTHOR_ID__'
-export APP_AUTHOR_EMAIL				= '__APP_AUTHOR_EMAIL__'
-export APP_AUTHOR_HOME_URL		= '__APP_AUTHOR_HOME_URL__'
-export APP_NAME								= '__APP_NAME__'
-export APP_ID									= '__APP_ID__'
-export APP_PRETTY_NAME				= '__APP_PRETTY_NAME__'
-export APP_VERSION						= '__APP_VERSION__'
-export APP_VVERSION						= '__APP_VVERSION__'
-export APP_REPO_TYPE					= '__APP_REPO_TYPE__'
-export APP_REPO_URL						= '__APP_REPO_URL__'
-export APP_HOME_URL						= '__APP_HOME_URL__'
-export APP_DOCUMENTATION_URL	= '__APP_DOCUMENTATION_URL__'
-export APP_BUG_REPORT_url			= '__APP_BUG_REPORT_URL__'
-export APP_SUPPORT_URL				= '__APP_SUPPORT_URL__'
+export APP_AUTHOR_NAME				= __APP_AUTHOR_NAME__
+export APP_AUTHOR_ID					= __APP_AUTHOR_ID__
+export APP_AUTHOR_EMAIL				= __APP_AUTHOR_EMAIL__
+export APP_AUTHOR_HOME_URL		= __APP_AUTHOR_HOME_URL__
+export APP_NAME								= __APP_NAME__
+export APP_ID									= __APP_ID__
+export APP_PRETTY_NAME				= __APP_PRETTY_NAME__
+export APP_VERSION						= __APP_VERSION__
+export APP_VVERSION						= __APP_VVERSION__
+export APP_REPO_TYPE					= __APP_REPO_TYPE__
+export APP_REPO_URL						= __APP_REPO_URL__
+export APP_HOME_URL						= __APP_HOME_URL__
+export APP_DOCUMENTATION_URL	= __APP_DOCUMENTATION_URL__
+export APP_BUG_REPORT_url			= __APP_BUG_REPORT_URL__
+export APP_SUPPORT_URL				= __APP_SUPPORT_URL__
 
 ##################################################
 # Program name transformation
@@ -177,6 +177,8 @@ distclean: clean
 ifeq ($(APP_REPO_TYPE),git)
 	$(GIT) clean -fdx
 else
+	-$(RM) -f node_modules
+	-$(RM) -f package-lock.json
 	-$(RM) -f *.log
 	-$(RM) -f .#*
 	-$(RM) -f config.*

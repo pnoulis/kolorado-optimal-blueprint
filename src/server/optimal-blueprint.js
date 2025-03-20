@@ -1,4 +1,4 @@
-import { powerset_reverse } from "/lib/permute/dist/permute.mjs";
+import { powerset_reverse } from "/libs/permute/dist/permute.mjs";
 import { get_t_locale_iso8601 } from "/src/common/locale.js";
 import { join } from "node:path";
 import { readdirSync } from "node:fs";
