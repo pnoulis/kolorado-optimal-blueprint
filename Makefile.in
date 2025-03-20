@@ -1,169 +1,135 @@
-#!/bin/make
+#!__BASH__
 
 ##################################################
 # Make config
 ##################################################
+.SUFFIXES: # Clear all suffix-based implicit rules
 .DELETE_ON_ERROR:
-.SECONDEXPANSION:
-.EXPORT_ALL_VARIABLES:
-SHELL							:= IN_BASH
+SHELL							:= __BASH__
 .DEFAULT_GOAL			:= all
 
 ##################################################
-# App description
+# Application information
 ##################################################
-PKG_AUTHOR_NAME				= IN_PKG_AUTHOR_NAME
-PKG_AUTHOR_ID					= IN_PKG_AUTHOR_ID
-PKG_AUTHOR_EMAIL			= IN_PKG_AUTHOR_EMAIL
-PKG_AUTHOR_HOME_URL		= IN_PKG_AUTHOR_HOME_URL
-PKG_NAME							= IN_PKG_NAME
-PKG_ID								= IN_PKG_ID
-PKG_PRETTY_NAME				= IN_PKG_PRETTY_NAME
-PKG_TARNAME						= IN_PKG_TARNAME
-PKG_VERSION						= IN_PKG_VERSION
-PKG_VERSION_ID				= IN_PKG_VERSION_ID
-PKG_VERSION_CODENAME	= IN_PKG_VERSION_CODENAME
-PKG_REPOSITORY_TYPE		= IN_PKG_REPOSITORY_TYPE
-PKG_REPOSITORY_DOMAIN	= IN_PKG_REPOSITORY_DOMAIN
-PKG_REPONAME					= IN_PKG_REPONAME
-PKG_REPOSITORY_PATH		= IN_PKG_REPOSITORY_PATH
-PKG_REPOSITORY_URL		= IN_PKG_REPOSITORY_URL
-PKG_HOME_URL					= IN_PKG_HOME_URL
-PKG_DOCUMENTATION_URL	= IN_PKG_DOCUMENTATION_URL
-PKG_BUG_REPORT_url		= IN_PKG_BUG_REPORT_URL
-PKG_SUPPORT_URL				= IN_PKG_SUPPORT_URL
+export APP_AUTHOR_NAME				= '__APP_AUTHOR_NAME__'
+export APP_AUTHOR_ID					= '__APP_AUTHOR_ID__'
+export APP_AUTHOR_EMAIL				= '__APP_AUTHOR_EMAIL__'
+export APP_AUTHOR_HOME_URL		= '__APP_AUTHOR_HOME_URL__'
+export APP_NAME								= '__APP_NAME__'
+export APP_ID									= '__APP_ID__'
+export APP_PRETTY_NAME				= '__APP_PRETTY_NAME__'
+export APP_VERSION						= '__APP_VERSION__'
+export APP_VVERSION						= '__APP_VVERSION__'
+export APP_REPO_TYPE					= '__APP_REPO_TYPE__'
+export APP_REPO_URL						= '__APP_REPO_URL__'
+export APP_HOME_URL						= '__APP_HOME_URL__'
+export APP_DOCUMENTATION_URL	= '__APP_DOCUMENTATION_URL__'
+export APP_BUG_REPORT_url			= '__APP_BUG_REPORT_URL__'
+export APP_SUPPORT_URL				= '__APP_SUPPORT_URL__'
 
 ##################################################
 # Program name transformation
 ##################################################
-program_name					= IN_PROGRAM_NAME
-program_vname					= IN_PROGRAM_VNAME
+export PROGRAM_NAME = __PROGRAM_NAME__
+
+##################################################
+# Build directories
+##################################################
+export BUILDROOTDIR			= __BUILDROOTDIR__
+export BUILDROOTDIR_ABS	= __BUILDROOTDIR_ABS__
+export SRCROOTDIR				= __SRCROOTDIR__
+export SRCROOTDIR_ABS		= __SRCROOTDIR_ABS__
+export SRCDIR						= $(SRCROOTDIR)/src
+export SRCDIR_ABS				= $(SRCROOTDIR_ABS)/src
+export BUILDIR					= __BUILDIR__
+export BUILDIR_ABS			= __BUILDIR_ABS__
+export DISTDIR					= __DISTDIR__
+export DISTDIR_ABS			= __DISTDIR_ABS__
 
 ##################################################
 # Installation directories
 ##################################################
-# gnu prefix directories
-PREFIX						= IN_PREFIX
-EXEC_PREFIX				= IN_EXEC_PREFIX
-BINDIR						= IN_BINDIR
-SBINDIR						= IN_SBINDIR
-LIBEXECDIR				= IN_LIBEXECDIR
-DATAROOTDIR				= IN_DATAROOTDIR
-DATADIR						= IN_DATADIR
-SYSCONFDIR				= IN_SYSCONFDIR
-SHAREDSTATEDIR		= IN_SHAREDSTATEDIR
-LOCALSTATEDIR			= IN_LOCALSTATEDIR
-RUNSTATEDIR				= IN_RUNSTATEDIR
-INCLUDEDIR				= IN_INCLUDEDIR
-OLDINCLUDEDIR			= IN_OLDINCLUDEDIR
-DOCDIR						= IN_DOCDIR
-INFODIR						= IN_INFODIR
-HTMLDIR						= IN_HTMLDIR
-DVIDIR						= IN_DVIDIR
-PDFDIR						= IN_PDFDIR
-PSDIR							= IN_PSDIR
-LIBDIR						= IN_LIBDIR
-LOCALEDIR					= IN_LOCALEDIR
-MANDIR						= IN_MANDIR
+export XDG_DATA_HOME			= __XDG_DATA_HOME__
+export XDG_CONFIG_HOME		= __XDG_CONFIG_HOME__
+export XDG_STATE_HOME			= __XDG_STATE_HOME__
+export XDG_CACHE_HOME			= __XDG_CACHE_HOME__
+export XDG_RUNTIME_DIR		= __XDG_RUNTIME_DIR__
+export XDG_DATA_DIRS			= __XDG_DATA_DIRS__
+export XDG_CONFIG_DIRS		= __XDG_CONFIG_DIRS__
+export prefix							= __prefix__
+export exec_prefix				= __exec_prefix__
+export bindir							= __bindir__
+export sbindir						= __sbindir__
+export libexecdir					= __libexecdir__
+export datarootdir				= __datarootdir__
+export datadir						= __datadir__
+export sysconfdir					= __sysconfdir__
+export sharedstatedir			= __sharedstatedir__
+export localstatedir			= __localstatedir__
+export runstatedir				= __runstatedir__
+export includedir					= __includedir__
+export oldincludedir			= __oldincludedir__
+export docdir							= __docdir__
+export infodir						= __infodir__
+export mandir							= __mandir__
+export htmldir						= __htmldir__
+export pdfdir							= __pdfdir__
+export psdir							= __psdir__
+export libdir							= __libdir__
+export localedir					= __localedir__
 # Derived directories
-TMPDIR						= IN_TMPDIR
-TMPDIR_PERSISTENT	= IN_TMPDIR_PERSISTENT
-STATEDIR					= IN_STATEDIR
-CACHEDIR					= IN_CACHEDIR
-LOGDIR						= IN_LOGDIR
-SPOOLDIR					= IN_SPOOLDIR
-LOCKDIR						= IN_LOCKDIR
-DESKTOPDIR				= IN_DESKTOPDIR
-ICONDIR						= IN_ICONDIR
-METAINFODIR				=	IN_METAINFODIR
+export tmpdir							= __tmpdir__
+export tmpdir_persistent	= __tmpdir_persistent__
+export statedir						= __statedir__
+export cachedir						= __cachedir__
+export logdir							= __logdir__
+export spooldir						= __spooldir__
+export lockdir						= __lockdir__
+export desktopdir					= __desktopdir__
+export icondir						= __icondir__
+export metainfodir				=	__metainfodir__
 
 ##################################################
 # Tools
 ##################################################
-MAKE		= IN_MAKE
-M4			= IN_M4
-CHMOD		= IN_CHMOD
-CHOWN		= IN_CHOWN
-JQ			= IN_JQ
-M4			= IN_M4
-CP			= IN_CP
-RM			= IN_RM
-CAT			= IN_CAT
-MKDIR		= IN_MKDIR
-MV			= IN_MV
-SQLITE3 = IN_SQLITE3
-NODE    = IN_NODE
-
-##################################################
-# input directories
-##################################################
-SRCDIR_TOP			= IN_SRCDIR
-SRCDIR_TOP_ABS	= IN_SRCDIR_ABS
-SRCDIR					= $(SRCDIR_TOP)/src
-SRCDIR_ABS			= $(SRCDIR_TOP_ABS)/src
-PUBLICDIR       = $(SRCDIR)/website
-
-##################################################
-# input files
-##################################################
-MACROSFILE		= $(BUILDIR_TOP)/config.macros.m4
-CONFIGFILE		= $(BUILDIR_TOP)/configure
-CONFIGENVFILE = $(BUILDIR_TOP)/config.env
-
-##################################################
-# output directories
-##################################################
-BUILDIR_TOP			= IN_BUILDIR
-BUILDIR_TOP_ABS	= IN_BUILDIR_ABS
-BUILDIR					= $(BUILDIR_TOP)/IN_BUILDIR_BASENAME
-BUILDIR_ABS			= $(BUILDIR_TOP_ABS)/IN_BUILDIR_BASENAME
-DISTDIR					= $(BUILDIR_TOP)/IN_DISTDIR_BASENAME
-DISTDIR_ABS			= $(BUILDIR_TOP_ABS)/IN_DISTDIR_BASENAME
-
-##################################################
-# output files
-##################################################
+MAKE					= __MAKE__
+ECHO					= __ECHO__
+CHMOD					= __CHMOD__
+CHOWN					= __CHOWN__
+CP						= __CP__
+RM						= __RM__
+CAT						= __CAT__
+MKDIR					= __MKDIR__
+CAT						= __CAT__
+CUT						= __CUT__
+TAIL					= __TAIL__
+GREP					= __GREP__
+GIT						= __GIT__
+M4						= __M4__
+M4_ENV_FLAGS	= __BUILD_TIME_ENV_M4_DEFINES__
 
 ##################################################
 # Misc
 ##################################################
-colon = :
-VPATH = tmp
+colon								= :
+CONFIG_MACROSFILE		= __SIMBA_CONFIG_MACROSFILE__
+CONFIG_MAKEFILE_IN	= __SIMBA_CONFIG_MAKEFILE_IN__
+CONFIG_MAKEFILE			= __SIMBA_CONFIG_MAKEFILE__
+export DOTENVFILE		= $(BUILDIR).env
+ENVIRONMENT					= __BUILD_TIME_ENV__
+export MODE					= __MODE__
 
-# Options
-MODE			= IN_MODE
-NODE_ENV	= IN_MODE
-DOMAIN    = IN_URL_HOSTNAME
-PORT			= IN_URL_PORT
-ORIGIN		= IN_URL_ORIGIN
-PATH			= IN_URL_PATH
-URL				= $(SERVER_ORIGIN)$(SERVER_PATH)
-DB_URL		= IN_DB_URL
+VPATH = $(SRCDIR)
 
 ##################################################
 # Default target
 ##################################################
-all: dev
-
-dev: build
-	$(NODE) $(BUILDIR)/index.js
+all: build
 
 ##################################################
 # Build
 ##################################################
-build: $(DB_URL)
-	$(NODE) ./esbuild.config.js
-
-$(DB_URL): $(SRCDIR)/db/db-create.sql $(SRCDIR)/db/db-seed.sql | $(dir $(DB_URL))
-	$(RM) -f $(DB_URL)
-	$(SQLITE3) $@ < $(SRCDIR)/db/db-create.sql
-	$(SQLITE3) $@ < $(SRCDIR)/db/db-seed.sql
-
-$(dir $(DB_URL)):
-	$(MKDIR) -p $@
-
-$(BUILDIR_ABS):
-	$(MKDIR) -p $@
+build:
 
 ##################################################
 # Release
@@ -171,22 +137,16 @@ $(BUILDIR_ABS):
 release:
 
 ##################################################
-# Distribute
+# Distribute source tree
 ##################################################
 dist: archive?=zip
 dist: dist.$$(archive)
 
 ##################################################
-# Package
+# Distribute package
 ##################################################
 package: archive?=zip
-package: $(DISTDIR)/$(PKG_TARNAME).$$(archive)
-
-$(DISTDIR)/$(PKG_TARNAME).zip: $(DISTDIR)/$(PKG_TARNAME)
-	cd $(DISTDIR); zip -r $(PKG_TARNAME).zip $(PKG_TARNAME)
-
-$(DISTDIR)/$(PKG_TARNAME): build
-	mkdir -p $@
+package: package.$$(archive)
 
 ##################################################
 # Install
@@ -199,48 +159,49 @@ install:
 uninstall:
 
 ##################################################
-# Update
-##################################################
-update:
-
-##################################################
-# clean
+# Clean
 ##################################################
 clean:
-	-$(RM) -fr $(DISTDIR)
-	-$(RM) -fr $(BUILDIR)
 
 ##################################################
-# distclean
+# Distclean
 ##################################################
 distclean: clean
+ifeq ($(APP_REPO_TYPE),git)
+	$(GIT) clean -fdx
+else
 	-$(RM) -f *.log
 	-$(RM) -f .#*
 	-$(RM) -f config.*
 	-$(RM) -f Makefile
-	-$(RM) -fr node_modules
-	-$(RM) -f package-lock.json
+endif
 
-.PHONY: scratch
-scratch:
-	node tmp/scratch.js
+##################################################
+# Environment
+##################################################
+dotenv: $(DOTENVFILE)
+
+$(DOTENVFILE): $(CONFIG_MAKEFILE_IN)
+	$(ECHO) -e $(ENVIRONMENT) > $@
+
 
 ##################################################
 # misc
 ##################################################
 .DEFAULT:
-	@if [ ! -f "$<" ]; then echo "Missing file -> $${file:-$<}"; exit 1; fi
-
+	@if [ ! -f "$<" ]; then $(ECHO) "Missing file -> $${file:-$<}"; exit 1; fi
 
 ##################################################
 # directories
 ##################################################
+$(BUILDIR_ABS):
+	$(MKDIR) -p $@ 2>/dev/null
 
 ##################################################
 # help
 ##################################################
 help:
-	@cat ./Makefile | grep -i --color=auto 'phony' | cut -d ' ' -f2- | tail --lines=+3
+	$(CAT) $(CONFIG_MAKEFILE)| $(GREP) -i --color=auto 'phony' | $(CUT) -d ' ' -f2- | $(TAIL) --lines=+3
 
 # Software development
 .PHONY: run # Read dotenvfile and run $target or tmp/scratch.js
@@ -254,7 +215,6 @@ help:
 # Software package
 .PHONY: install # Install package
 .PHONY: uninstall # Uninstall package
-.PHONY: update # Update package
 # Cleaning
 .PHONY: clean # Remove files created by ./make
 .PHONY: distclean # Remove files created by ./configure
