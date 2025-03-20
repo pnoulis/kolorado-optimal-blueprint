@@ -107,6 +107,8 @@ GREP					= __GREP__
 GIT						= __GIT__
 M4						= __M4__
 M4_ENV_FLAGS	= __BUILD_TIME_ENV_M4_DEFINES__
+NODE					= __NODE__
+NPM						= __NPM__
 
 ##################################################
 # Misc
@@ -118,6 +120,7 @@ CONFIG_MAKEFILE			= __SIMBA_CONFIG_MAKEFILE__
 export DOTENVFILE		= $(BUILDIR).env
 ENVIRONMENT					= __BUILD_TIME_ENV__
 export MODE					= __MODE__
+export NODE_ENV			= __NODE_ENV__
 
 VPATH = $(SRCDIR)
 
@@ -129,7 +132,11 @@ all: build
 ##################################################
 # Build
 ##################################################
-build:
+build: package-lock.json
+	$(NODE) esbuild.config.js
+
+package-lock.json: package.json
+	$(NPM) install --save-exact
 
 ##################################################
 # Release

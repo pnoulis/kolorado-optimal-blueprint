@@ -40,6 +40,15 @@ main() {
 
     # parse user options
     simba_define_btime_envar MODE 'production'
+    if test MODE == 'production'; then
+        simba_define_btime_envar NODE_ENV 'production'
+    else
+        simba_define_btime_envar NODE_ENV 'development'
+    fi
+
+    # resolve app dependencies
+    simba_resolve_app_dependencies
+
     simba_cli_parse_options "$@"
 
     # define installation directories
@@ -69,6 +78,29 @@ main() {
     simba_define_ctime_envar SIMBA_CONFIG_MAKEFILE "${BUILDROOTDIR}/Makefile"
     simba_create_macrosfile
     simba_create_makefile
+}
+
+simba_resolve_app_dependencies() {
+    simba_define_btime_envar NODE_VERSION '22.14.0'
+    simba_define_btime_envar NPM_VERSION '11.2.0'
+
+    # If NODE_VERSION is not found do not halt execution; rather try
+    # and install it
+    set +o errexit
+    simba_is_command_installed node $NODE_VERSION
+    if test $? -gt 0; then
+        # NODE_VERSION not found; Try and install it.
+        [ -s "$NVM_DIR/nvm.sh" ] || simba_fatal "Could not load node version manager (nvm). Is nvm installed?"
+        source "$NVM_DIR/nvm.sh"  # load nvm
+        nvm install $NODE_VERSION --latest-npm
+    fi
+    set -o errexit
+    # Finally if NODE_VERSION failed to get installed exit
+    simba_is_command_installed node $NODE_VERSION
+    simba_define_btime_envar NODE $command_path
+
+    simba_is_command_installed npm $NPM_VERSION
+    simba_define_btime_envar NPM $command_path
 }
 
 
