@@ -92,23 +92,25 @@ export metainfodir				=	__metainfodir__
 ##################################################
 # Tools
 ##################################################
-MAKE					= __MAKE__
-ECHO					= __ECHO__
-CHMOD					= __CHMOD__
-CHOWN					= __CHOWN__
-CP						= __CP__
-RM						= __RM__
-CAT						= __CAT__
-MKDIR					= __MKDIR__
-CAT						= __CAT__
-CUT						= __CUT__
-TAIL					= __TAIL__
-GREP					= __GREP__
-GIT						= __GIT__
-M4						= __M4__
-M4_ENV_FLAGS	= __BUILD_TIME_ENV_M4_DEFINES__
-NODE					= __NODE__
-NPM						= __NPM__
+MAKE						= __MAKE__
+ECHO						= __ECHO__
+CHMOD						= __CHMOD__
+CHOWN						= __CHOWN__
+CP							= __CP__
+RM							= __RM__
+CAT							= __CAT__
+MKDIR						= __MKDIR__
+CAT							= __CAT__
+CUT							= __CUT__
+TAIL						= __TAIL__
+GREP						= __GREP__
+GIT							= __GIT__
+M4							= __M4__
+M4_ENV_FLAGS		= __BUILD_TIME_ENV_M4_DEFINES__
+NODE						= __NODE__
+NPM							= __NPM__
+SQLITE3					= __SQLITE3__
+SQLITE3_HELPER	= $(SRCROOTDIR)/db/sqlite3.sh
 
 ##################################################
 # Misc
@@ -121,6 +123,10 @@ export DOTENVFILE		= $(BUILDIR).env
 ENVIRONMENT					= __BUILD_TIME_ENV__
 export MODE					= __MODE__
 export NODE_ENV			= __NODE_ENV__
+export DB_PATH			= __DB_PATH__
+export DB_NAME			= __DB_NAME__
+export DB_ID				= __DB_ID__
+DB_FILENAME					= __DB_FILENAME__
 
 VPATH = $(SRCDIR)
 
@@ -132,8 +138,15 @@ all: build
 ##################################################
 # Build
 ##################################################
-build: package-lock.json
-	$(NODE) esbuild.config.js
+build: sqlite3-db
+#package-lock.json
+# $(NODE) esbuild.config.js
+
+sqlite3-db: $(BUILDIR)/$(DB_PATH)
+$(BUILDIR)/$(DB_PATH): $(SRCROOTDIR)/db/db-create.sql $(SRCROOTDIR)/db/db-seed.sql
+	-$(RM) -f $(DB_PATH)
+	$(SQLITE3_HELPER) --db-name=$(DB_NAME) --db-path=$(DB_PATH) create $(SRCROOTDIR)/db/db-create.sql
+	$(SQLITE3_HELPER) --db-name=$(DB_NAME) --db-path=$(DB_PATH) seed $(SRCROOTDIR)/db/db-seed.sql
 
 package-lock.json: package.json
 	$(NPM) install --save-exact
@@ -169,6 +182,7 @@ uninstall:
 # Clean
 ##################################################
 clean:
+	-$(RM) -f *.db
 
 ##################################################
 # Distclean

@@ -1,8 +1,9 @@
 #!/bin/bash
 
-./configure --dev \
-          --buildir=build \
-          --distdir=dist \
-          --url=http://localhost \
-          --port=8080 \
-          --db-url=build/boptimus.db
+./configure --dev --statedir='${BUILDIR}'
+# ./configure --dev \
+#           --buildir=build \
+#           --distdir=dist \
+#           --url=http://localhost \
+#           --port=8080 \
+#           --db-path=build/boptimus.db
