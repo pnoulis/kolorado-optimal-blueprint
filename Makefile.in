@@ -188,16 +188,12 @@ clean:
 # Distclean
 ##################################################
 distclean: clean
-ifeq ($(APP_REPO_TYPE),git)
-	$(GIT) clean -fdx
-else
 	-$(RM) -f node_modules
 	-$(RM) -f package-lock.json
 	-$(RM) -f *.log
 	-$(RM) -f .#*
 	-$(RM) -f config.*
 	-$(RM) -f Makefile
-endif
 
 ##################################################
 # Environment
