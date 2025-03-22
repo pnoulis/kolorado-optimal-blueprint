@@ -20,8 +20,8 @@ main() {
 
     # Package
     simba_define_btime_envar APP_NAME kolorado-optimal-blueprint
-    simba_define_btime_envar APP_ID kolorado-optimal-blueprint
-    simba_define_btime_envar APP_PRETTY_NAME kolorado-optimal-blueprint
+    simba_define_btime_envar APP_ID kob
+    simba_define_btime_envar APP_PRETTY_NAME "Kolorado optimal blueprints"
     simba_define_btime_envar APP_VERSION '0.0.1'
     simba_define_btime_envar APP_VVERSION 'v0.0.1'
     simba_define_btime_envar APP_REPO_TYPE git
@@ -37,6 +37,12 @@ main() {
     simba_resolve_os
     simba_resolve_os_dependencies
     simba_resolve_buildir "${BASH_SOURCE[0]}"
+
+    # Sqlite3 database
+    simba_define_btime_envar DB_NAME kob
+    simba_define_btime_envar DB_ID kob-db
+    simba_define_btime_envar DB_FILENAME kob.db
+    simba_define_btime_envar DB_URL '${localstatedir}/lib/${PROGRAM_NAME}/${DB_FILENAME}'
 
     # parse user options
     simba_define_btime_envar MODE 'production'
