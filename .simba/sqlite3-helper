@@ -18,8 +18,6 @@ EXAMPLES
 EOF
 }
 
-source /usr/local/share/simba/utils.sh
-source /usr/local/share/simba/debug.sh
 
 DEBUG=1
 DB_PATH=
@@ -301,5 +299,119 @@ simba_cli_parse_options() {
     done
     unset _param
 }
+
+simba_undefined() {
+    return $(test -z "${!1+x}")
+}
+
+simba_defined() {
+    return $(test -n "${!1+x}")
+}
+
+simba_empty() {
+    return $(test -z "${1}")
+}
+
+simba_nempty() {
+    return $(test -n "${1}")
+}
+
+simba_true() {
+    return $(test "$1" == true || test "$1" == "0")
+}
+
+simba_false() {
+    return $(test "$1" == false || test "$1" == "1")
+}
+
+simba_fatal() {
+    echo "$0:" "$@"
+    exit 1
+}
+
+# $1 parameter must be quoted otherwise it will undergo expansion
+# before this function is invoked; meaning every space delimited text
+# within shall become a positional argument to the function: $1 -> $1,$2,$3...
+simba_trim() {
+    echo $1
+}
+
+simba_reset_ifs() {
+    # IFS needs to be set, to space, tab, and newline, in precisely that order.
+    # (If _AS_PATH_WALK were called with IFS unset, it would have the
+    # side effect of setting IFS to empty, thus disabling word splitting.)
+    # Quoting is to prevent editors from complaining about space-tab.
+    as_nl='
+    '
+    export as_nl
+    IFS=" ""	$as_nl"
+
+    PS1='$ '
+    PS2='> '
+    PS4='+ '
+
+    # Ensure predictable behavior from utilities with locale-dependent output.
+    LC_ALL=C
+    export LC_ALL
+    LANGUAGE=C
+    export LANGUAGE
+}
+
+simba_log_configure_output() {
+    rm -f config.log
+    exec > >(tee config.log)
+}
+
+# use mode.sh
+
+simba_debugv() {
+    ! simba_mode_in_debug && return
+    echo $1:"${!1}"
+}
+
+simba_debug() {
+    ! simba_mode_in_debug && return
+    echo -e "$@"
+}
+
+simba_debug_unless_pipe() {
+    ! test -t 1 && return
+    simba_debug "$@"
+}
+
+simba_debugv_unless_pipe() {
+    ! test -t 1 && return
+    simba_debugv "$@"
+}
+
+simba_print() {
+    echo -e "$@"
+}
+
+simba_print_unless_pipe() {
+    ! test -t 1 && return
+    simba_print "$@"
+}
+
+simba_mode_in_dev() {
+    return $(test "$MODE" == dev || test "$MODE" == development)
+}
+
+simba_mode_in_test() {
+    return $(test "$MODE" == test)
+}
+
+simba_mode_in_stag() {
+    return $(test "$MODE" == stag || test "$MODE" == staging)
+}
+
+simba_mode_in_prod() {
+    return $(test "$MODE" == prod || test "$MODE" == production)
+}
+
+simba_mode_in_debug() {
+    return $(test -n "${DEBUG+x}" && (test "$DEBUG" == true || test "$DEBUG" == "0"))
+}
+
 
 main "$@"

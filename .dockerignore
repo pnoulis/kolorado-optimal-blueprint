@@ -5,5 +5,9 @@ Dockerfile.*
 .git
 .gitignore
 config.*
-configure
-Makefile.in
+.#*
+Makefile
+package-lock.json
+compose.yml
+examples
+project.org

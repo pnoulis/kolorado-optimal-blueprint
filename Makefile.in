@@ -92,25 +92,38 @@ export metainfodir				=	__metainfodir__
 ##################################################
 # Tools
 ##################################################
-MAKE						= __MAKE__
-ECHO						= __ECHO__
-CHMOD						= __CHMOD__
-CHOWN						= __CHOWN__
-CP							= __CP__
-RM							= __RM__
-CAT							= __CAT__
-MKDIR						= __MKDIR__
-CAT							= __CAT__
-CUT							= __CUT__
-TAIL						= __TAIL__
-GREP						= __GREP__
-GIT							= __GIT__
-M4							= __M4__
-M4_ENV_FLAGS		= __BUILD_TIME_ENV_M4_DEFINES__
+MAKE					= __MAKE__
+ECHO					= __ECHO__
+CHMOD					= __CHMOD__
+CHOWN					= __CHOWN__
+CP						= __CP__
+RM						= __RM__
+CAT						= __CAT__
+MKDIR					= __MKDIR__
+CAT						= __CAT__
+CUT						= __CUT__
+TAIL					= __TAIL__
+GREP					= __GREP__
+GIT						= __GIT__
+M4						= __M4__
+M4_ENV_FLAGS	= __BUILD_TIME_ENV_M4_DEFINES__
+
+##################################################
+# Node
+##################################################
 NODE						= __NODE__
 NPM							= __NPM__
+export NODE_ENV	= __NODE_ENV__
+
+##################################################
+# Sqlite3
+##################################################
 SQLITE3					= __SQLITE3__
-SQLITE3_HELPER	= $(SRCROOTDIR)/db/sqlite3.sh
+SQLITE3_HELPER	= $(SRCROOTDIR)/.simba/sqlite3-helper
+export DB_PATH	= __DB_PATH__
+export DB_NAME	= __DB_NAME__
+export DB_ID		= __DB_ID__
+DB_FILENAME			= __DB_FILENAME__
 
 ##################################################
 # Misc
@@ -122,11 +135,6 @@ CONFIG_MAKEFILE			= __SIMBA_CONFIG_MAKEFILE__
 export DOTENVFILE		= $(BUILDIR).env
 ENVIRONMENT					= __BUILD_TIME_ENV__
 export MODE					= __MODE__
-export NODE_ENV			= __NODE_ENV__
-export DB_PATH			= __DB_PATH__
-export DB_NAME			= __DB_NAME__
-export DB_ID				= __DB_ID__
-DB_FILENAME					= __DB_FILENAME__
 
 VPATH = $(SRCDIR)
 
@@ -139,17 +147,12 @@ all: build
 # Build
 ##################################################
 build: sqlite3-db
-#package-lock.json
-# $(NODE) esbuild.config.js
 
-sqlite3-db: $(BUILDIR)/$(DB_PATH)
-$(BUILDIR)/$(DB_PATH): $(SRCROOTDIR)/db/db-create.sql $(SRCROOTDIR)/db/db-seed.sql
+sqlite3-db: $(BUILDIR)/$(DB_FILENAME)
+$(BUILDIR)/$(DB_FILENAME): $(SRCROOTDIR)/db/db-create.sql $(SRCROOTDIR)/db/db-seed.sql | $(BUILDIR_ABS)
 	-$(RM) -f $(DB_PATH)
-	$(SQLITE3_HELPER) --db-name=$(DB_NAME) --db-path=$(DB_PATH) create $(SRCROOTDIR)/db/db-create.sql
-	$(SQLITE3_HELPER) --db-name=$(DB_NAME) --db-path=$(DB_PATH) seed $(SRCROOTDIR)/db/db-seed.sql
-
-package-lock.json: package.json
-	$(NPM) install --save-exact
+	$(SQLITE3_HELPER) --db-path=$@ --db-name=$(DB_NAME) create $(SRCROOTDIR)/db/db-create.sql
+	$(SQLITE3_HELPER) --db-path=$@ --db-name=$(DB_NAME) seed $(SRCROOTDIR)/db/db-seed.sql
 
 ##################################################
 # Release
@@ -182,13 +185,17 @@ uninstall:
 # Clean
 ##################################################
 clean:
-	-$(RM) -f *.db
+ifneq ($(BUILDIR),$(BUILDROOTDIR))
+	-$(RM) -fr $(BUILDIR)
+else
+	-$(RM) -f $(BUILDIR)/$(DB_FILENAME)
+endif
 
 ##################################################
 # Distclean
 ##################################################
 distclean: clean
-	-$(RM) -f node_modules
+	-$(RM) -fr node_modules
 	-$(RM) -f package-lock.json
 	-$(RM) -f *.log
 	-$(RM) -f .#*
@@ -203,7 +210,6 @@ dotenv: $(DOTENVFILE)
 $(DOTENVFILE): $(CONFIG_MAKEFILE_IN)
 	$(ECHO) -e $(ENVIRONMENT) > $@
 
-
 ##################################################
 # misc
 ##################################################
@@ -214,7 +220,7 @@ $(DOTENVFILE): $(CONFIG_MAKEFILE_IN)
 # directories
 ##################################################
 $(BUILDIR_ABS):
-	$(MKDIR) -p $@ 2>/dev/null
+	$(MKDIR) -p $(BUILDIR) 2>/dev/null
 
 ##################################################
 # help

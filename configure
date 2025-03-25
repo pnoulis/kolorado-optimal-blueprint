@@ -3,14 +3,6 @@ set -o errexit
 
 main() {
     SRCDIR_ABS="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" 2>/dev/null && pwd)"
-    source /usr/local/share/simba/debug.sh
-    source /usr/local/share/simba/versions.sh
-    source /usr/local/share/simba/utils.sh
-    source /usr/local/share/simba/envars.sh
-    source /usr/local/share/simba/os.sh
-    source /usr/local/share/simba/buildir.sh
-    source /usr/local/share/simba/installdirs-gnu.sh
-    source /usr/local/share/simba/installdirs-xdg.sh
 
     # Author
     simba_define_btime_envar APP_AUTHOR_NAME 'pavlos noulis'
@@ -19,12 +11,12 @@ main() {
     simba_define_btime_envar APP_AUTHOR_HOME_URL 'https://github.com/pnoulis'
 
     # Package
-    simba_define_btime_envar APP_NAME kolorado-optimal-blueprint
-    simba_define_btime_envar APP_ID kob
-    simba_define_btime_envar APP_PRETTY_NAME "Kolorado optimal blueprints"
-    simba_define_btime_envar APP_VERSION '0.0.1'
-    simba_define_btime_envar APP_VVERSION 'v0.0.1'
-    simba_define_btime_envar APP_REPO_TYPE git
+    simba_define_btime_envar APP_NAME 'kolorado-optimal-blueprint'
+    simba_define_btime_envar APP_ID 'kob'
+    simba_define_btime_envar APP_PRETTY_NAME 'Kolorado optimal blueprint'
+    simba_define_btime_envar APP_VERSION "0.0.1"
+    simba_define_btime_envar APP_VVERSION "v0.0.1"
+    simba_define_btime_envar APP_REPO_TYPE 'git'
     simba_define_btime_envar APP_REPO_URL 'https://github.com/pnoulis/kolorado-optimal-blueprint'
     simba_define_btime_envar APP_HOME_URL 'https://github.com/pnoulis/kolorado-optimal-blueprint'
     simba_define_btime_envar APP_DOCUMENTATION_URL 'https://github.com/pnoulis/kolorado-optimal-blueprint#readme'
@@ -38,29 +30,12 @@ main() {
     simba_resolve_os_dependencies
     simba_resolve_buildir "${BASH_SOURCE[0]}"
 
-    # Node
-    simba_define_ctime_envar NODE_VERSION '22.14.0'
-    simba_define_ctime_envar NPM_VERSION '11.2.0'
-
-    # Sqlite3 database
-    simba_define_ctime_envar SQLITE3_VERSION '3.40'
-    simba_define_btime_envar DB_NAME kob
-    simba_define_btime_envar DB_ID ${DB_NAME}-db
-    simba_define_btime_envar DB_FILENAME ${DB_ID}.db
-    simba_define_btime_envar DB_PATH '${statedir}/${DB_FILENAME}'
-
-    # Resolve app dependencies
-    simba_resolve_app_dependencies
-
     # Parse user options
     simba_define_btime_envar MODE 'production'
     simba_cli_parse_options "$@"
 
-    if test MODE == 'production'; then
-        simba_define_btime_envar NODE_ENV 'production'
-    else
-        simba_define_btime_envar NODE_ENV 'development'
-    fi
+    # Resolve kob dependencies
+    kob_resolve_app_dependencies
 
     # Define installation directories
     if test -z "$SIMBA_INSTALLDIRS"; then
@@ -73,7 +48,7 @@ main() {
         esac
     fi
 
-    # Program name
+    # Define program name
     PROGRAM_TRANSFORM_NAME='s,x,x,'
     if simba_nempty PROGRAM_PREFIX; then
         PROGRAM_TRANSFORM_NAME="s&^&$PROGRAM_PREFIX&;$PROGRAM_TRANSFORM_NAME"
@@ -91,9 +66,10 @@ main() {
     simba_create_makefile
 }
 
-simba_resolve_app_dependencies() {
-
-    # Node
+kob_resolve_app_dependencies() {
+    # Resolve Node
+    simba_define_ctime_envar NODE_VERSION '22.14.0'
+    simba_define_ctime_envar NPM_VERSION '10.9.2'
     # If NODE_VERSION is not found do not halt execution; rather try
     # and install it
     set +o errexit
@@ -108,15 +84,26 @@ simba_resolve_app_dependencies() {
     # Finally if NODE_VERSION failed to get installed exit
     simba_is_command_installed node $NODE_VERSION
     simba_define_btime_envar NODE $command_path
+    if test MODE == 'production'; then
+        simba_define_btime_envar NODE_ENV 'production'
+    else
+        simba_define_btime_envar NODE_ENV 'development'
+    fi
 
+    # Resolve Node package manager (npm)
     simba_is_command_installed npm $NPM_VERSION
     simba_define_btime_envar NPM $command_path
 
-    # Sqlite3 database
+
+    # Resolve Sqlite3 database
+    simba_define_ctime_envar SQLITE3_VERSION '3.40'
+    simba_define_btime_envar DB_NAME kob
+    simba_define_btime_envar DB_ID kob-db
+    simba_define_btime_envar DB_FILENAME kob.db
+    simba_define_btime_envar DB_PATH '${statedir}/${DB_FILENAME}'
     simba_is_command_installed sqlite3 $SQLITE3_VERSION
     simba_define_btime_envar SQLITE3 $command_path
 }
-
 
 simba_create_macrosfile() {
     simba_print "Creating macrosfile...|$SIMBA_CONFIG_MACROSFILE"
@@ -132,10 +119,6 @@ simba_create_macrosfile() {
 simba_create_makefile() {
     simba_print "Creating Makefile...|$SIMBA_CONFIG_MAKEFILE"
     m4 $SIMBA_CONFIG_MACROSFILE $SIMBA_CONFIG_MAKEFILE_IN > $SIMBA_CONFIG_MAKEFILE
-}
-
-usage() {
-    echo 'usage'
 }
 
 simba_cli_parse_param() {
@@ -194,10 +177,7 @@ simba_cli_parse_options() {
                 simba_cli_parse_param "$@" || shift $?
                 simba_define_btime_envar datadir "$_param"
                 ;;
-            --statedir | --statedir=*)
-                simba_cli_parse_param "$@" || shift $?
-                simba_define_btime_envar statedir "$_param"
-                ;;
+
             --buildir | --buildir=*)
                 simba_cli_parse_param "$@" || shift $?
                 simba_define_btime_envar BUILDIR_ABS "$(realpath -m "$_param")"
@@ -246,5 +226,24 @@ simba_cli_parse_options() {
     done
     unset _param
 }
+
+
+usage() {
+    echo 'usage'
+}
+
+source '.simba/os.sh'
+source '.simba/installdirs-gnu.sh'
+source '.simba/debug.sh'
+source '.simba/cli-args.sh'
+source '.simba/versions.sh'
+source '.simba/mode.sh'
+source '.simba/utils.sh'
+source '.simba/array.sh'
+source '.simba/dictionary.sh'
+source '.simba/buildir.sh'
+source '.simba/url.sh'
+source '.simba/installdirs-xdg.sh'
+source '.simba/envars.sh'
 
 main "$@"

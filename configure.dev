@@ -1,9 +1,12 @@
 #!/bin/bash
 
-./configure --dev --statedir='${BUILDIR}'
-# ./configure --dev \
-#           --buildir=build \
-#           --distdir=dist \
-#           --url=http://localhost \
-#           --port=8080 \
-#           --db-path=build/boptimus.db
+options=(
+    --dev
+    --installdirs=gnu
+    --buildir=build
+    --prefix='${BUILDIR_ABS}'
+    --datarootdir='${SRCROOTDIR_ABS}'
+    --datadir='${SRCDIR_ABS}'
+)
+
+./configure "${options[@]}"

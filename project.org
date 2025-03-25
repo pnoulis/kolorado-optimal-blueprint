@@ -23,6 +23,11 @@ Expected information:
 - total remainder shapes_count
 - count of each shape remainder
 
+** Logging
+
+The server logs all requests and responses.
+All logged messages should include the requestId.
+
 * UI sketches
 ** blueprints
 
@@ -127,3 +132,59 @@ in both Blueprint and Shape; simplifying the codebase.
 ** TODO render html errors client side
 ** TODO sqlite function for CRUD operations on optimal blueprint
 ** DONE Configure and Build the package
+* Log
+** Use a build system
+
+Either use a simple bash script like so:
+
+build.sh
+
+Or a build system like simba/autotools/cmake etc.
+
+** Choose major dependency versions
+
+Decide on major dependencies versions.
+Preferably the picked versions should be a long term supported
+release. (LTS)
+
+- node
+- bundler
+- database drivers
+
+
+Node version should be made into a variable
+create .nvmrc file
+
+All dependencies should be installed at configure-time including
+ones from nodejs package manager.
+
+** Write scripts for basic database management
+
+- create database
+- seed database
+- drop/restart database
+- data backups
+- data exports
+
+The script requires 2 parameters; The URL to the database and the
+database name.
+
+In the case of sqlite3 the URL is a reference to a local file path.
+
+Some sub commands accept another positional argument such as the name
+of the output file to create as part of the dump/backup/export or in
+the case of creating/seeding the database, the SQL input script.
+
+available variables at runtime:
+
+DB_NAME
+TABLE
+DATETIME_NOW
+DATETIME_NOW_COMPACT
+EXT
+
+** Dockerize the application
+
+*** configure time
+*** build time
+*** run time
