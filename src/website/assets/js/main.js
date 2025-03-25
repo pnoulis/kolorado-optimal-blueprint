@@ -1,4 +1,4 @@
-import { debug } from "../../common/index.js";
+import { debug } from './debug.js';
 import { createDialog } from "./dialog.js";
 import { http } from "./http.js";
 

@@ -1,11 +1,11 @@
-parse_url() {
+simba_url_parse() {
     # Shamelessly copied over from: https://gist.github.com/joshisa/297b0bc1ec0dcdda0d1625029711fa24
     # With some own additions
-    declare -n url="$1"
+    url="$1"
     local prefix="$1"
     local _port="$2"
 
-    local protocol=$(echo "$url" | grep "://" | sed -e's,^\(.*://\).*,\1,g')
+    protocol=$(echo "$url" | grep "://" | sed -e's,^\(.*://\).*,\1,g')
     # Remove the protocol
     local url_no_protocol=$(echo "${url/$protocol/}")
     # Use tr: Make the protocol lower-case for easy string compare
@@ -23,31 +23,25 @@ parse_url() {
     else
         user="$userpass"
     fi
-
     # Extract the host
     local hostport=$(echo "${url_no_protocol/$userpass@/}" | cut -d"/" -f1)
-    local host=$(echo "$hostport" | cut -d":" -f1)
+    host=$(echo "$hostport" | cut -d":" -f1)
     port=$(echo "$hostport" | grep ":" | cut -d":" -f2)
     port=${port:-$_port}
-    local path="/"$(echo "$url_no_protocol" | grep "/" | cut -d"/" -f2-)
+    path="/"$(echo "$url_no_protocol" | grep "/" | cut -d"/" -f2-)
 
+    protocol="${protocol:-http://}"
     # origin
-    local origin="${protocol:-http}"
+    origin="${protocol:-http://}"
     [[ "$user" != "" ]] && origin="${origin}${user}"
     [[ "$pass" != "" ]] && origin="${origin}:${pass}"
-    [[ "$userpass" != "" ]] && oriign="${origin}@"
+    [[ "$userpass" != "" ]] && origin="${origin}@"
     origin="${origin}${host}:${port}"
 
-    declare -gx ${prefix}_PROTOCOL="${protocol:-http}"
-    declare -gx ${prefix}_USERNAME="$user"
-    declare -gx ${prefix}_PASSWORD="$pass"
-    declare -gx ${prefix}_DOMAIN="$host"
-    declare -gx ${prefix}_PORT="${port:-$PORT}"
-    declare -gx ${prefix}_PATH="${path:-/}"
-
-    if [[ "$path" == "" ]]; then
-        url="${origin}"
-    else
-        url="${origin}${path}"
-    fi
+    protocol="${protocol%:*}"
+    username="$user"
+    password="$pass"
+    port="${port:-$PORT}"
+    path="${path:-/}"
+    url="${origin}${path%/*}"
 }

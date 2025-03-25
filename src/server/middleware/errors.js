@@ -2,7 +2,7 @@ import { join } from "node:path";
 import { Kerror } from "/src/common/Kerror.js";
 
 function notFoundError(req, res) {
-  res.type("html").status(404).render(join(PUBLICDIR, "404"), {
+  res.type("html").status(404).render(join(process.env.PUBLICDIR, "404"), {
     url: req.originalUrl,
   });
 }

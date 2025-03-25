@@ -1,0 +1,53 @@
+<!--
+Data dependency:
+{
+shapes: [ { id, name }..., ]
+}
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>kob</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="icon" type="image/png" href="/assets/favicon.png" />
+<link rel="stylesheet" type="text/css" href="/assets/css/main.css" />
+<!-- <link rel="stylesheet" type="text/css" href="/assets/css/reset.css" /> -->
+<!-- <link rel="stylesheet" type="text/css" href="/assets/css/root.css" /> -->
+</head>
+</html><body>
+<header>
+<h1>Kolorado optimal blueprint</h1>
+<nav class="nav">
+<a id="home" class="nav-link" href="/">Home</a>
+<a id="blueprints" class="nav-link" href="/blueprints">Blueprints</a>
+<a id="shapes" class="nav-link" href="/shapes">Shapes</a>
+</nav>
+<ul>
+<li>
+<button data-format="excel" type="button" value="export">export to excel</button>
+</li>
+</ul>
+</header><main>
+<h3>find optimal blueprint</h3>
+<form id="form-optimal-blueprints" name="optimal-blueprints">
+<div class="shapes">
+<fieldset class="shape">
+<label class="input-count">
+<input type="number" value="1" />
+</label>
+<button class="remove-shape" type="button" value="remove">remove</button>
+</fieldset>
+<button id="add-shape" type="button" value="add">add</button>
+</div>
+<button type="submit" value="submit">find optimal blueprints</button>
+</form>
+<ul class="list-optimal-blueprint" >
+</ul>
+</main>
+<footer class="section-footer">
+Created By
+<cite title="Source title"><a href="#"></a></cite>
+</footer>
+<script defer type="module" src="/assets/js/main.js"></script><script defer type="module" src="/assets/js/home.js"></script>
+</body>

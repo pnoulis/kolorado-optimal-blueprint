@@ -1,7 +1,7 @@
 import ejs from "ejs";
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { db } from "./sqlite.js";
+import { db } from "./db.js";
 
 function createPage(template, destination, data) {
   template = readFileSync(template, { encoding: "utf8" });
@@ -41,8 +41,9 @@ function createShapesPage(data) {
 function createHomePage(data) {
   data ||= {};
   return createPage(
-    join(process.env.PUBLICDIR, "home.ejs"),
+    join(process.env.PUBLICDIR, "index.ejs"),
     join(process.env.PUBLICDIR, "index.html"),
+    data,
     {
       shapes: data.shapes || db.getShapes(),
     },

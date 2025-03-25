@@ -13,7 +13,7 @@ const transformAbsoluteModuleImports = {
 if (process.env.NODE_ENV === "production") {
   esbuild.build({
     bundle: true,
-    entryPoints: ["src/server/index.js"],
+    entryPoints: ["src/server/main.js"],
     outdir: process.env.DISTDIR,
     plugins: [transformAbsoluteModuleImports],
     minify: true,
@@ -26,7 +26,7 @@ if (process.env.NODE_ENV === "production") {
 } else {
   esbuild.build({
     bundle: true,
-    entryPoints: ["src/server/index.js"],
+    entryPoints: ["src/server/main.js"],
     outdir: process.env.BUILDIR,
     plugins: [transformAbsoluteModuleImports],
     minify: false,

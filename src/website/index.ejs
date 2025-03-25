@@ -5,21 +5,15 @@
      }
 -->
 
-<%- include('./head.ejs') -%>
+<%- include('./components/head.ejs') -%>
 
 <body>
-    <%- include('./header.ejs') -%>
+    <%- include('./components/header.ejs') -%>
     <main>
         <h3>find optimal blueprint</h3>
         <form id="form-optimal-blueprints" name="optimal-blueprints">
             <div class="shapes">
                 <fieldset class="shape">
-                    <select class="select-shape" name="select-shape">
-                        <option value="">select shape</option>
-                        <% for (let i = 0; i < shapes.length; i++) { %>
-                        <option value="<%= shapes[i].id %>"><%= shapes[i].name %></option>
-                        <% } %>
-                    </select>
                     <label class="input-count">
                         <input type="number" value="1" />
                     </label>
@@ -32,6 +26,6 @@
         <ul class="list-optimal-blueprint" >
         </ul>
     </main>
-    <%- include('./footer.ejs') -%>
-    <script defer type="module" src="/home.js"></script>
+    <%- include('./components/footer.ejs') -%>
+    <script defer type="module" src="/assets/js/home.js"></script>
 </body>

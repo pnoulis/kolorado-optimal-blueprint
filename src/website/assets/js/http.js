@@ -1,4 +1,4 @@
-import { debug } from "../../common/index.js";
+// import { debug } from "../../common/index.js";
 const SERVER_URL = "http://localhost:8080";
 const REQUEST_TIMEOUT = 15000; // 15 seconds
 

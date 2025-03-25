@@ -38,7 +38,7 @@ import sqlite from "better-sqlite3";
  * @property {number} lastInsertRowid
  */
 
-const _db = new sqlite(process.env.DB_URL);
+const _db = new sqlite(process.env.DB_PATH);
 const db = {
   /**
    * Create shape

@@ -1,11 +1,11 @@
-import "./globals.js";
+import "./globals";
 import express from "express";
 import bodyParser from "body-parser";
-import { api } from "./api.js";
-import { health } from "./health.js";
+// import { api } from "./api.js";
+// import { health } from "./health.js";
 import { logTransaction } from "./middleware/log.js";
-import { notFoundError, internalServerError } from "./middleware/errors.js";
 import { transformStaticAssetUrl } from "./middleware/transformStaticAssetUrl.js";
+import { notFoundError, internalServerError } from "./middleware/errors.js";
 import {
   createBlueprintsPage,
   createHomePage,
@@ -18,8 +18,8 @@ app.set("view engine", "ejs");
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(logTransaction);
-app.use("/api", api);
-app.use("/health", health);
+// app.use("/api", api);
+// app.use("/health", health);
 app.use(
   transformStaticAssetUrl,
   express.static(process.env.PUBLICDIR, {
@@ -41,6 +41,6 @@ debug()(`Created -> ${createHomePage()}`);
 debug()(`Created -> ${createShapesPage()}`);
 debug()(`Created -> ${createBlueprintsPage()}`);
 
-app.listen(process.env.PORT, () => {
-  debug()(`${process.env.PKG_ID} listening on port: ${process.env.PORT}`);
+app.listen(process.env.KOB_URL_PORT, () => {
+  debug()(`${process.env.APP_ID} listening on port: ${process.env.KOB_URL_PORT}`);
 });

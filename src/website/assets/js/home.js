@@ -1,4 +1,4 @@
-import { debug } from "../../common/index.js";
+// import { debug } from "../../common/index.js";
 import { http } from "./http.js";
 
 const queryShape = ".shape";

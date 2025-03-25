@@ -1,6 +1,7 @@
 #!/bin/bash
 set -o errexit
 
+DEBUG=0
 main() {
     SRCDIR_ABS="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" 2>/dev/null && pwd)"
 
@@ -100,7 +101,7 @@ kob_resolve_app_dependencies() {
     simba_define_btime_envar DB_NAME kob
     simba_define_btime_envar DB_ID kob-db
     simba_define_btime_envar DB_FILENAME kob.db
-    simba_define_btime_envar DB_PATH '${statedir}/${DB_FILENAME}'
+    simba_define_btime_envar DB_PATH '${BUILDIR_ABS}/${DB_FILENAME}'
     simba_is_command_installed sqlite3 $SQLITE3_VERSION
     simba_define_btime_envar SQLITE3 $command_path
 }
@@ -195,6 +196,18 @@ simba_cli_parse_options() {
             --program-suffix | --program-suffix=*)
                 simba_cli_parse_param "$@" || shift $?
                 PROGRAM_SUFFIX="$_param"
+                ;;
+            --kob-url | --kob-url=*)
+                simba_cli_parse_param "$@" || shift $?
+                simba_url_parse "$_param"
+                simba_define_btime_envar KOB_URL "$url"
+                simba_define_btime_envar KOB_URL_PROTOCOL "$protocol"
+                simba_define_btime_envar KOB_URL_USERNAME "$username"
+                simba_define_btime_envar KOB_URL_PASSWORD "$password"
+                simba_define_btime_envar KOB_URL_HOST "$host"
+                simba_define_btime_envar KOB_URL_ORIGIN "$origin"
+                simba_define_btime_envar KOB_URL_PORT "$port"
+                simba_define_btime_envar KOB_URL_PATH "$path"
                 ;;
             -h | --help)
                 usage

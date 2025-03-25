@@ -126,14 +126,27 @@ export DB_ID		= __DB_ID__
 DB_FILENAME			= __DB_FILENAME__
 
 ##################################################
+# Kob server
+##################################################
+KOB_URL = __KOB_URL__
+KOB_URL_PROTOCOL = __KOB_URL_PROTOCOL__
+KOB_URL_USERNAME = __KOB_URL_USERNAME__
+KOB_URL_PASSWORD = __KOB_URL_PASSWORD__
+KOB_URL_HOST = __KOB_URL_HOST__
+KOB_URL_ORIGIN = __KOB_URL_ORIGIN__
+KOB_URL_PORT = __KOB_URL_PORT__
+KOB_URL_PATH = __KOB_URL_PATH__
+
+##################################################
 # Misc
 ##################################################
 colon								= :
 CONFIG_MACROSFILE		= __SIMBA_CONFIG_MACROSFILE__
 CONFIG_MAKEFILE_IN	= __SIMBA_CONFIG_MAKEFILE_IN__
 CONFIG_MAKEFILE			= __SIMBA_CONFIG_MAKEFILE__
-export DOTENVFILE		= $(BUILDIR).env
+DOTENVFILE					= $(BUILDIR)/.env
 ENVIRONMENT					= __BUILD_TIME_ENV__
+LOADENV							= set -a; source $(DOTENVFILE)
 export MODE					= __MODE__
 
 VPATH = $(SRCDIR)
@@ -146,13 +159,27 @@ all: build
 ##################################################
 # Build
 ##################################################
-build: sqlite3-db
+build: sqlite3-db api dotenv public
+
+public:
+	-$(MKDIR) -p $(BUILDIR)/public
+	$(CP) -ru $(SRCDIR)/website/* $(BUILDIR)/public
+	$(CP) -ru $(SRCDIR)/common/* $(BUILDIR)/public/assets/js
+
+api:
+	$(NODE) ./esbuild.config.js
 
 sqlite3-db: $(BUILDIR)/$(DB_FILENAME)
 $(BUILDIR)/$(DB_FILENAME): $(SRCROOTDIR)/db/db-create.sql $(SRCROOTDIR)/db/db-seed.sql | $(BUILDIR_ABS)
-	-$(RM) -f $(DB_PATH)
+	-$(RM) -f $@
 	$(SQLITE3_HELPER) --db-path=$@ --db-name=$(DB_NAME) create $(SRCROOTDIR)/db/db-create.sql
 	$(SQLITE3_HELPER) --db-path=$@ --db-name=$(DB_NAME) seed $(SRCROOTDIR)/db/db-seed.sql
+
+##################################################
+# Run
+##################################################
+run: build
+	$(LOADENV); cd $(BUILDIR) && $(NODE) ./main.js
 
 ##################################################
 # Release
@@ -207,8 +234,9 @@ distclean: clean
 ##################################################
 dotenv: $(DOTENVFILE)
 
-$(DOTENVFILE): $(CONFIG_MAKEFILE_IN)
-	$(ECHO) -e $(ENVIRONMENT) > $@
+$(DOTENVFILE): $(CONFIG_MAKEFILE)
+	@$(ECHO) -e $(ENVIRONMENT) > $@
+	@$(ECHO) "PUBLICDIR=$(BUILDIR_ABS)/public" >> $@
 
 ##################################################
 # misc
