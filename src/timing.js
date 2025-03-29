@@ -3,6 +3,9 @@ import { performance } from "node:perf_hooks";
 const timings = new Map();
 
 const timing = {
+  preciseTimestamp: () => {
+    return performance.now();
+  },
   start: (label = "default") => {
     if (timings.has(label)) throw new Error(`Duplicate timing: ${label}`);
     return timings.set(label, performance.now());

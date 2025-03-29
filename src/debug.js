@@ -4,9 +4,7 @@ function debug(title) {
     console.log(title);
   }
   return (msg) => {
-    typeof msg === "object"
-      ? console.dir(msg, { depth: null })
-      : console.log(msg);
+    console.log(msg);
     if (title) {
       console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
     }
