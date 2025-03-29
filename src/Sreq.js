@@ -135,7 +135,7 @@ function makeUrl(url, params) {
     one of the static methods.
   */
 
-  let _url = url || "";
+  let _url = url || "/";
   if (this?.baseUrl) {
     _url = new URL(_url, this.baseUrl);
     _url.pathname = makePath.call(
@@ -191,11 +191,11 @@ function makeBody(method, url, { query, form, json, xml, csv, plain }) {
     case "patch":
       url.search = makeQuery.call(this, url.searchParams, query);
       if (json) {
-        body = structuredClone(json);
+        body = JSON.stringify(structuredClone(json));
         contentType = "application/json";
       } else if (form) {
         for (const [k, v] of form.entries()) {
-          body[k] = structuredClone(v);
+          body[k] = JSON.stringify(structuredClone(v));
         }
         contentType = "application/json";
       } else {

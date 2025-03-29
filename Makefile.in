@@ -167,7 +167,7 @@ public:
 	$(CP) -ru $(SRCDIR)/common/* $(BUILDIR)/public/assets/js
 
 api:
-	$(NODE) ./esbuild.config.js
+	$(NODE) $(SRCROOTDIR)/esbuild.config.js
 
 sqlite3-db: $(BUILDIR)/$(DB_FILENAME)
 $(BUILDIR)/$(DB_FILENAME): $(SRCROOTDIR)/db/db-create.sql $(SRCROOTDIR)/db/db-seed.sql | $(BUILDIR_ABS)
@@ -179,7 +179,7 @@ $(BUILDIR)/$(DB_FILENAME): $(SRCROOTDIR)/db/db-create.sql $(SRCROOTDIR)/db/db-se
 # Develop
 ##################################################
 dev: build
-	$(LOADENV); $(NPM) exec nodemon $(BUILDIR)/main.js
+	$(LOADENV); $(NPM) exec -- nodemon --watch $(SRCDIR) --exec "make api && node ./$(BUILDIR)/main.js"
 
 ##################################################
 # Release
