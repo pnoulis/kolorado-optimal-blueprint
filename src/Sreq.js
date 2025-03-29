@@ -135,7 +135,7 @@ function makeUrl(url, params) {
     one of the static methods.
   */
 
-  let _url = url || "";
+  let _url = url || "/";
   if (this?.baseUrl) {
     _url = new URL(_url, this.baseUrl);
     _url.pathname = makePath.call(
