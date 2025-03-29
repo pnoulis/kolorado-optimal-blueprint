@@ -176,10 +176,10 @@ $(BUILDIR)/$(DB_FILENAME): $(SRCROOTDIR)/db/db-create.sql $(SRCROOTDIR)/db/db-se
 	$(SQLITE3_HELPER) --db-path=$@ --db-name=$(DB_NAME) seed $(SRCROOTDIR)/db/db-seed.sql
 
 ##################################################
-# Run
+# Develop
 ##################################################
-run: build
-	$(LOADENV); cd $(BUILDIR) && $(NODE) ./main.js
+dev: build
+	$(LOADENV); $(NPM) exec nodemon $(BUILDIR)/main.js
 
 ##################################################
 # Release
