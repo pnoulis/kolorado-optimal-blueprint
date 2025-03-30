@@ -179,7 +179,9 @@ $(BUILDIR)/$(DB_FILENAME): $(SRCROOTDIR)/db/db-create.sql $(SRCROOTDIR)/db/db-se
 # Develop
 ##################################################
 dev: build
-	$(LOADENV); $(NPM) exec -- nodemon --watch $(SRCDIR) --exec "make api && node ./$(BUILDIR)/main.js"
+	$(LOADENV); $(NPM) exec -- nodemon --watch $(SRCDIR) \
+	--exec "make api && node ./$(BUILDIR)/main.js" | \
+	$(NPM) exec -- pino-pretty -c
 
 ##################################################
 # Release

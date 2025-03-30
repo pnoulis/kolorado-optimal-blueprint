@@ -1,10 +1,13 @@
+import { log } from './log.js';
+
+
 function debug(title) {
   if (title) {
     console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
     console.log(title);
   }
   return (msg) => {
-    console.log(msg);
+    log.debug(msg);
     if (title) {
       console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
     }

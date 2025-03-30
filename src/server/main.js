@@ -22,7 +22,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(logResponse);
 app.use("/api", router);
-app.use(finishResponse);
 // app.use("/api", api);
 // app.use(
 //   transformStaticAssetUrl,
@@ -39,7 +38,8 @@ app.use(finishResponse);
 // );
 
 // app.all("*", notFoundError);
-app.use(internalServerError, finishResponse);
+app.use(internalServerError);
+app.use(finishResponse);
 
 // debug()(`Created -> ${createHomePage()}`);
 // debug()(`Created -> ${createShapesPage()}`);

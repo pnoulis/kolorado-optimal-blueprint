@@ -1,6 +1,6 @@
-import prettyJson from "prettyjson";
 import { extname } from "node:path";
 import { Buffer } from "node:buffer";
+import { log } from "../../log.js";
 
 function logResponse(req, res, next) {
   let oldWrite = res.write,
@@ -24,34 +24,34 @@ function logResponse(req, res, next) {
   };
 
   const url = req.path;
-  console.log(
-    `[${ctx.requestId}] ${req.method} ${url}
-HEADERS<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-${prettyJson.render(req.headers)}
-META<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-${prettyJson.render({
-  requestId: ctx.requestId
-})}
-QUERY<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-${req.query ? prettyJson.render(req.query) : "{}"}
-BODY<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-${req.body ? prettyJson.render(req.body) : "{}"}`,
-  );
+  log.info({
+    method: req.method,
+    url,
+    requestId: ctx.requestId,
+    msg: `${req.method} ${url}`
+  });
+  log.trace({
+    requestId: ctx.requestId,
+    headers: req.headers,
+    data: {
+      body: req.body,
+      query: req.query,
+    },
+  });
   res.on("finish", () => {
-    console.log(res.locals.ctx);
-    const ctx = res.locals.ctx;
-    const type = res.get("Content-Type");
-    const txt = /\/text|\/json/.test(type);
-    console.log(`[${ctx.requestId}] ${req.method} ${res.statusCode} ${url}
-HEADERS>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-${prettyJson.render(res.getHeaders())}
-META>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-${prettyJson.render({
-responseTime: ctx.responseTime,
-})}
-BODY>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-${txt ? prettyJson.render(JSON.parse(body)) : type}
-`);
+    log[ctx._ok ? "info" : "error"]({
+      requestId: ctx.requestId,
+      responseTime: ctx.responseTime,
+      httpCode: res.statusCode,
+      httpMsg: res.statusMessage,
+      msg: ctx.msg,
+    });
+
+    log.trace({
+      requestId: ctx.requestId,
+      headers: res.getHeaders(),
+      data: ctx,
+    });
   });
   return next();
 }
