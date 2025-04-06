@@ -1,9 +1,8 @@
-import { debug } from "../../debug.js";
 import { db } from "../db.js";
 
 const SQLCreateShape = db.prepare("INSERT INTO shape (name) VALUES (@name)");
 
-async function createShape(req, res, next) {
+async function createShape(req, res) {
   const ctx = res.ctx;
   try {
     const sqlResponse = SQLCreateShape.run(req.body);

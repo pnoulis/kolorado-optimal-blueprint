@@ -8,7 +8,7 @@ class Result {
   ok(msg, data) {
     this.status = 1;
     this.msg = msg;
-    this.data = Object.assign({}, data);
+    this.data = data;
     return this;
   }
   nok(msg, error) {
