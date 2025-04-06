@@ -3,25 +3,38 @@ import express from "express";
 import bodyParser from "body-parser";
 import { router } from "./router.js";
 // import { api } from "./api.js";
-import { startResponse } from './middleware/startResponse.js';
+import { setupContext } from './middleware/setupContext.js';
+import { timeResponse } from "./middleware/timeResponse.js";
 import { logResponse } from "./middleware/logResponse.js";
-import { finishResponse } from "./middleware/finishResponse.js";
+import { notFound } from "./middleware/notFound.js";
+import { catchUnhandledError } from "./middleware/catchUnhandledError.js";
 // import { transformStaticAssetUrl } from "./middleware/transformStaticAssetUrl.js";
-import { notFoundError, internalServerError } from "./middleware/errors.js";
 // import {
 //   createBlueprintsPage,
 //   createHomePage,
 //   createShapesPage,
 // } from "./pages.js";
-
 const app = new express();
 
 app.set("view engine", "ejs");
-app.use(startResponse);
+
+app.use(setupContext);
+app.use(timeResponse);
+app.use(logResponse);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(logResponse);
-app.use("/api", router);
+
+app.get('/test', async (req, res) => {
+  res.ctx.nok({
+    foo: "bar",
+  }, "succsfully created a resource");
+  res.status(404).json(res.ctx.serialize());
+})
+
+app.use(notFound);
+app.use(catchUnhandledError);
+
+// app.use("/api", router);
 // app.use("/api", api);
 // app.use(
 //   transformStaticAssetUrl,
@@ -37,9 +50,15 @@ app.use("/api", router);
 //   }),
 // );
 
-// app.all("*", notFoundError);
-app.use(internalServerError);
-app.use(finishResponse);
+// app.use(notFoundError);
+// app.use((err, req, res, next) => {
+//   console.log('error handler caught');
+//   res.emit('error', err);
+//   res.err = err;
+//   res.status(err.code || 500).json({ error: "foobar" });
+// })
+// app.use(internalServerError);
+// app.use(finishResponse);
 
 // debug()(`Created -> ${createHomePage()}`);
 // debug()(`Created -> ${createShapesPage()}`);

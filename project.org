@@ -88,7 +88,7 @@ following cache strategy:
 - ETag: checksum
 - Cache-Control: no-cache
 
-These resources are placed at: $(PUBLICDIR)/
+These resourceshttps://github.com/pnoulis/permuteveee are placed at: $(PUBLICDIR)/
 
 * Tickets
 ** DONE User gets all blueprints
@@ -188,3 +188,135 @@ EXT
 *** configure time
 *** build time
 *** run time
+** Request Context
+*** Request context
+*** Request Id
+Each request/response transaction should be identified by an ID.
+Choosing the ID type one ideally would like to take into
+consideration:
+
+- size (ID length, size in bytes)
+- cost of computation (measured in time)
+- uniqueness
+
+Many examples across the internet employ a UUID usually generated
+by a crypto library such as:
+
+#+begin_src javascript
+  import crypto from 'node:crypto';
+
+  const requestId = crypto.randomUUID();
+#+end_src
+
+This passes the uniqueness requirement very comfortably but is
+computationally expensive.
+
+Another solution is using a counter.
+
+#+begin_src javascript
+  let countRequest = 0;
+  const requestId = ++countRequest.toString();
+  console.log(requestId);
+#+end_src
+
+This solution is certainly the fastest. However there are 2 problems:
+
+At server reboot the counter would reset back to 0 hence invalidating
+uniqueness. The counter could be persisted but still there is no
+guaranteeing its availability at server boot.
+
+What if the API was served using multiple server instances. Then each
+server would have its own request counter again invalidating
+uniqueness. One could still employ some persistence technique but
+there would be no guaranteeing its availability.
+
+No, the requestId must be generated at will independently within the
+server whilst at the same time guaranteeing uniqueness, small
+computational cost and relatively small size.
+
+
+The 3rd solution is using the time the request was made.
+Making use of the highest precision possible to ensure uniqueness
+maybe even paired with a counter.
+
+The requestId should also me send to the consumer in a header:
+
+[x-request-id]: requestId
+*** Response time
+requestTime = Date.now();
+responseTime = Date.now() - requestTime;
+** Standardize the response format
+
+In expressjs the httpStatusCode and httpStatusMessage are contained
+at:
+
+res.statusCode
+res.statusMessage
+
+setting the status modifies the statusMessage
+res.status(201) -> "Created"
+
+status = number (0(error) | 1(success))
+msg = string (A short message describing the action performed by the API)
+data = object | array | string | number | boolean | null
+In case of an error:
+error = {
+    code = number | null (An error ID in numerical form)
+    msg = string (A short message describing the error)
+    details = object | array | null
+}
+
+** Log the request and the response
+
+The request context.
+
+When a request arrives to the server certain tasks are initiated.
+
+- The request is assigned an ID
+- The time of the request is recorded
+- Event handler functions are registered to go off when the response
+  is completed
+- A global error handler middleware is set to catch any unexpected
+  errors
+
+Basically, the last express middleware should be an error handler.
+This error handler:
+
+- catches unexpected errors
+- wraps them in the standard server response format
+- stores them in the response so that registered event listeners can
+  then pick it up
+- completes the response
+
+
+
+
+crashing the server.
+That error handler 
+
+The standard format should be:
+requestId: "",
+responseTime: "",
+method: "",
+req: {
+   method: "",
+   query: {},
+   params: {},
+   url: "",
+   headers: {}
+   ip: ""
+   port: 0
+}
+res: {
+  statusCode:
+  statusMsg:
+  headers: {},
+  body: {
+  }
+}
+
+
+* Runtime macros / envars
+DB_PATH
+KOB_URL
+

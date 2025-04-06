@@ -1,13 +1,10 @@
-import { log } from './log.js';
-
-
 function debug(title) {
   if (title) {
     console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
     console.log(title);
   }
   return (msg) => {
-    log.debug(msg);
+    console.log(typeof msg === 'object' ? JSON.stringify(msg) : msg);
     if (title) {
       console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
     }

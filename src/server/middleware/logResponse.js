@@ -1,59 +1,62 @@
-import { extname } from "node:path";
-import { Buffer } from "node:buffer";
 import { log } from "../../log.js";
 
 function logResponse(req, res, next) {
-  let oldWrite = res.write,
-    oldEnd = res.end,
-    body;
+  res.on('close', onResponseFinished);
+  res.on('finish', onResponseFinished);
+  res.on('error', onResponseFinished);
+  return next();
 
-  const chunks = [];
-  const ctx = res.locals.ctx;
+  function onResponseFinished() {
+    res.removeListener('close', onResponseFinished);
+    res.removeListener('finish', onResponseFinished);
+    res.removeListener('error', onResponseFinished);
 
-  res.write = function (chunk) {
-    chunks.push(Buffer.from(chunk));
+    if (res.statusCode < 300) logSuccess(req, res);
+    else logError(req, res);
+  }
+}
 
-    oldWrite.apply(res, arguments);
-  };
-
-  res.end = function (chunk) {
-    if (chunk) chunks.push(Buffer.from(chunk));
-
-    body = Buffer.concat(chunks).toString("utf8");
-    oldEnd.apply(res, arguments);
-  };
-
-  const url = req.path;
+function logSuccess(req, res) {
+  log.info('what');
   log.info({
-    method: req.method,
-    url,
-    requestId: ctx.requestId,
-    msg: `${req.method} ${url}`
-  });
-  log.trace({
-    requestId: ctx.requestId,
-    headers: req.headers,
-    data: {
-      body: req.body,
+    req: {
+      id: res.ctx.requestId,
+      path: req.path,
+      method: req.method,
+      headers: req.headers,
+      params: req.params,
       query: req.query,
+      body: req.body
     },
-  });
-  res.on("finish", () => {
-    log[ctx._ok ? "info" : "error"]({
-      requestId: ctx.requestId,
-      responseTime: ctx.responseTime,
+    res: {
+      time: res.ctx.responseTime,
       httpCode: res.statusCode,
       httpMsg: res.statusMessage,
-      msg: ctx.msg,
-    });
-
-    log.trace({
-      requestId: ctx.requestId,
       headers: res.getHeaders(),
-      data: ctx,
-    });
+      body: res.ctx.serialize()
+    }
   });
-  return next();
-}
+};
+
+function logError(req, res) {
+  log.error({
+    req: {
+      id: res.ctx.requestId,
+      path: req.path,
+      method: req.method,
+      headers: req.headers,
+      params: req.params,
+      query: req.query,
+      body: req.body
+    },
+    res: {
+      time: res.ctx.responseTime,
+      httpCode: res.statusCode,
+      httpMsg: res.statusMessage,
+      headers: res.getHeaders(),
+      body: res.ctx.serialize()
+    }
+  });
+};
 
 export { logResponse };
