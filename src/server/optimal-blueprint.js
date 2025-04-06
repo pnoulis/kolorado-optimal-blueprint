@@ -1,4 +1,4 @@
-import { powerset_reverse } from "/libs/permute/dist/permute.mjs";
+import { powerset_reverse } from "/lib/permute/dist/permute.mjs";
 import { get_t_locale_iso8601 } from "/src/common/locale.js";
 import { join } from "node:path";
 import { readdirSync } from "node:fs";
@@ -45,12 +45,17 @@ function generate_optimal_blueprint(target_shapes, source_blueprints, options) {
     unique_capable_blueprints,
   );
 
+
   // The sorting is really important. It guarantees that when the
   // first permutation that does not fulfill the target_shapes_count
   // is produced, no other permutation down the pipeline will get a
   // better score. As such the algorithm should cease its operations
   // and return the result
   sort_blueprints_shapes_count_increasing(capable_blueprints);
+
+  console.log(capable_blueprints);
+  console.log('sorted');
+
 
   let optimal_permutation_score = 1000000;
   let optimal_permutation;
@@ -68,6 +73,7 @@ function generate_optimal_blueprint(target_shapes, source_blueprints, options) {
       _break,
     );
 
+    console.log(permutation.score);
     if (permutation.score < 0) return;
     else if (permutation.score === 0) {
       optimal_permutation_score = 0;
@@ -242,7 +248,8 @@ function score_by_least_shape_remainder(
     remainder_total += permutation.shapes_unique[i].score;
   }
   permutation.remainder_total = remainder_total;
-  permutation.score = remainder_target_total;
+  // permutation.score = remainder_target_total;
+  permutation.score = remainder_total;
 }
 
 export {

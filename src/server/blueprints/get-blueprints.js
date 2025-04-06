@@ -16,29 +16,33 @@ JOIN
    shape s ON bs.shape_id = s.id
 `);
 
+function formatBlueprintsTable(blueprintsTable) {
+  const blueprints = new Map();
+  let blueprint;
+  for (const row of blueprintsTable) {
+    blueprint = blueprints.get(row.blueprint_id);
+    if (!blueprint) {
+      blueprint = {
+        id: row.blueprint_id,
+        name: row.blueprint_name,
+        shapes: [],
+      };
+      blueprints.set(blueprint.id, blueprint);
+    }
+    blueprint.shapes.push({
+      id: row.shape_id,
+      name: row.shape_name,
+      count: row.count,
+    });
+  }
+  return Array.from(blueprints.values());
+}
+
 async function getBlueprints(req, res) {
   const ctx = res.ctx;
   try {
     const blueprintsTable = SQLGetBlueprintsWithRelations.all();
-    const blueprints = new Map();
-    let blueprint;
-    for (const row of blueprintsTable) {
-      blueprint = blueprints.get(row.blueprint_id);
-      if (!blueprint) {
-        blueprint = {
-          id: row.blueprint_id,
-          name: row.blueprint_name,
-          shapes: [],
-        };
-        blueprints.set(blueprint.id, blueprint);
-      }
-      blueprint.shapes.push({
-        id: row.shape_id,
-        name: row.shape_name,
-        count: row.count,
-      });
-    }
-    ctx.ok("Retrieved blueprints", Array.from(blueprints.values()));
+    ctx.ok("Retrieved blueprints", formatBlueprintsTable(blueprintsTable));
     res.status(200).json(ctx);
   } catch (err) {
     ctx.nok("Failed to get blueprints", err);
@@ -46,4 +50,9 @@ async function getBlueprints(req, res) {
   }
 }
 
-export { getBlueprints, SQLGetBlueprints, SQLGetBlueprintsWithRelations };
+export {
+  getBlueprints,
+  SQLGetBlueprints,
+  SQLGetBlueprintsWithRelations,
+  formatBlueprintsTable,
+};
