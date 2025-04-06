@@ -7,15 +7,15 @@ async function deleteShape(req, res) {
   try {
     const sqlResponse = SQLDeleteShape.run(req.params.id);
     if (sqlResponse.changes === 0) {
-      return res.status(404).json(
-        ctx.nok("Failed to delete shape", {
-          id: req.params.id,
-        }),
-      );
+      ctx.nok("Failed to delete shape", req.params);
+      return res.status(404).json(ctx);
     }
-    res.status(200).json(ctx.ok("Deleted shape", sqlResponse));
+    ctx.ok("Deleted shape", req.params);
+    res.status(200).json(ctx);
   } catch (err) {
-    res.status(500).json(ctx.nok(err.message, err));
+    ctx.nok("Failed to delete shape", err);
+    res.status(500).json(ctx);
   }
 }
-export { deleteShape };
+
+export { deleteShape, SQLDeleteShape };

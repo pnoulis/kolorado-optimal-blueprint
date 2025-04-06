@@ -1,4 +1,5 @@
 import { db } from "../db.js";
+import { SQLGetShapeByName } from "./get-shape.js";
 
 const SQLCreateShape = db.prepare("INSERT INTO shape (name) VALUES (@name)");
 
@@ -7,30 +8,26 @@ async function createShape(req, res) {
   try {
     const sqlResponse = SQLCreateShape.run(req.body);
     if (!sqlResponse.changes) {
-      return res
-        .status(500)
-        .json(
-          ctx.nok(
-            `Failed to create shape: ${req.body.name}`,
-            "Unknown exception",
-          ),
-        );
+      ctx.nok("Failed to create shape", req.body);
+      return res.status(500).json(ctx);
     }
-    res.status(201).json(
-      ctx.ok(`Successfully created shape: ${req.body.name}`, {
-        id: sqlResponse.lastInsertRowid,
-      }),
-    );
+
+    const shape = SQLGetShapeByName.get(req.body.name);
+    if (!shape) {
+      ctx.nok("Missing shape", req.body);
+      return res.status(404).json(ctx);
+    }
+    ctx.ok("Created shape", shape);
+    res.status(201).json(ctx);
   } catch (err) {
     if (err.code === "SQLITE_CONSTRAINT_UNIQUE") {
-      res
-        .status(409)
-        .json(ctx.nok(`Duplicate shape exists: ${req.body.name}`, err));
+      ctx.nok("Duplicate shape exists", err);
+      res.status(409).json(ctx);
     } else {
-      res
-        .status(500)
-        .json(ctx.nok(`Failed to create shape: ${req.body.name}`, err));
+      ctx.nok("Failed to create shape", err);
+      res.status(500).json(ctx);
     }
   }
 }
-export { createShape };
+
+export { createShape, SQLCreateShape };

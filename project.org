@@ -90,7 +90,7 @@ following cache strategy:
 
 These resourceshttps://github.com/pnoulis/permuteveee are placed at: $(PUBLICDIR)/
 
-* Tickets
+* Old Tickets
 ** DONE User gets all blueprints
 ** DONE User gets one blueprint based on ID
 ** DONE User gets one blueprint based on Name
@@ -132,6 +132,7 @@ in both Blueprint and Shape; simplifying the codebase.
 ** TODO render html errors client side
 ** TODO sqlite function for CRUD operations on optimal blueprint
 ** DONE Configure and Build the package
+* New Tickets
 * Log
 ** Use a build system
 
