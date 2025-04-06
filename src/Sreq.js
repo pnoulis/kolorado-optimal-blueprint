@@ -40,7 +40,7 @@ class Sreq {
         ...headers,
       },
       signal: startAbortCountdown(timeout || this?.timeout),
-    }).then(parseResponse);
+    });
   }
 
   static post(url, { params, query, headers, json, form, timeout } = {}) {
@@ -58,7 +58,7 @@ class Sreq {
       },
       signal: startAbortCountdown(timeout || this?.timeout),
       body,
-    }).then(parseResponse);
+    });
   }
 
   static put(url, { params, query, headers, json, form, timeout } = {}) {
@@ -76,7 +76,7 @@ class Sreq {
       },
       signal: startAbortCountdown(timeout || this?.timeout),
       body,
-    }).then(parseResponse);
+    });
   }
 
   static patch(url, { params, query, headers, json, form, timeout } = {}) {
@@ -94,7 +94,7 @@ class Sreq {
       },
       signal: startAbortCountdown(timeout || this?.timeout),
       body,
-    }).then(parseResponse);
+    });
   }
 
   static delete(url, { params, query, headers, json, form, timeout } = {}) {
@@ -107,7 +107,7 @@ class Sreq {
         ...headers,
       },
       signal: startAbortCountdown(timeout || this?.timeout),
-    }).then(parseResponse);
+    });
   }
 }
 
@@ -115,18 +115,6 @@ function startAbortCountdown(timeout) {
   const controller = new AbortController();
   setTimeout(() => controller.abort(), timeout || REQUEST_TIMEOUT);
   return controller.signal;
-}
-
-async function parseResponse(res) {
-  return res.status >= 200 && res.status < 300
-    ? {
-        success: true,
-        value: res,
-      }
-    : {
-        success: false,
-        error: res,
-      };
 }
 
 function makeUrl(url, params) {

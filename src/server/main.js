@@ -23,18 +23,10 @@ app.use(timeResponse);
 app.use(logResponse);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-
-app.get('/test', async (req, res) => {
-  res.ctx.nok({
-    foo: "bar",
-  }, "succsfully created a resource");
-  res.status(404).json(res.ctx.serialize());
-})
-
+app.use("/api", router);
 app.use(notFound);
 app.use(catchUnhandledError);
 
-// app.use("/api", router);
 // app.use("/api", api);
 // app.use(
 //   transformStaticAssetUrl,

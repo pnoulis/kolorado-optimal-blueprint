@@ -17,7 +17,6 @@ function logResponse(req, res, next) {
 }
 
 function logSuccess(req, res) {
-  log.info('what');
   log.info({
     req: {
       id: res.ctx.requestId,

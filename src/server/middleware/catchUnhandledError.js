@@ -1,6 +1,5 @@
 function catchUnhandledError(err, req, res, next) {
-  res.ctx.error(err);
-  res.status(res.ctx.httpCode).json(res.ctx.serialize());
+  res.status(500).json(res.ctx.nok(err.message, err).serialize());
 }
 
 export { catchUnhandledError };

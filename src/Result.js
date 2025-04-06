@@ -1,17 +1,17 @@
 class Result {
   constructor() {
     this.status = 0;
-    this.code = 0;
     this.msg = "";
     this.data = null;
     this.err = null;
   }
-  ok(data, msg) {
+  ok(msg, data) {
     this.status = 1;
     this.msg = msg;
     this.data = Object.assign({}, data);
+    return this;
   }
-  nok(error, msg) {
+  nok(msg, error) {
     this.status = 0;
     this.msg = msg;
     if (error instanceof Error) {
@@ -19,6 +19,7 @@ class Result {
     } else {
       this.data = error;
     }
+    return this;
   }
   serialize() {
     return {
