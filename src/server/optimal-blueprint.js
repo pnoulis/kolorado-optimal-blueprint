@@ -53,8 +53,6 @@ function generate_optimal_blueprint(target_shapes, source_blueprints, options) {
   // and return the result
   sort_blueprints_shapes_count_increasing(capable_blueprints);
 
-  console.log(capable_blueprints);
-  console.log('sorted');
 
 
   let optimal_permutation_score = 1000000;
@@ -73,7 +71,6 @@ function generate_optimal_blueprint(target_shapes, source_blueprints, options) {
       _break,
     );
 
-    console.log(permutation.score);
     if (permutation.score < 0) return;
     else if (permutation.score === 0) {
       optimal_permutation_score = 0;

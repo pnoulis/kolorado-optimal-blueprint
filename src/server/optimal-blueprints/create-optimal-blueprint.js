@@ -17,7 +17,7 @@ async function createOptimalBlueprint(req, res) {
   try {
     const targetShapes = req.body;
     const sourceBlueprints = formatBlueprintsTable(
-      SQLGetBlueprintsWithRelations.all(),
+      SQLGetBlueprintsWithRelations.all(-1, -1),
     );
     let optimalBlueprint = generate_optimal_blueprint(
       targetShapes,
