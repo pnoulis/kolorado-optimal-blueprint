@@ -1,20 +1,17 @@
 {
   "name": "kolorado-optimal-blueprint",
+  "private": true,
   "version": "0.0.1",
   "description": "An algorithm for finding the optimal configuration of blueprints to feed in to a wood cutting CNC machine and a WEB UI to manage associated assets for: https://kolorado.bg",
-  "keywords": [],
   "repository": "https://github.com/pnoulis/kolorado-optimal-blueprint.git",
   "homepage": "https://github.com/pnoulis/kolorado-optimal-blueprint#readme",
   "bugs": "https://github.com/pnoulis/kolorado-optimal-blueprint/issues",
   "author": "pavlos noulis <pavlos.noulis@gmail.com> (https://github.com/pnoulis)",
-  "private": true,
   "type": "module",
   "engines": {
     "npm": "10.9.2",
     "node": "22.14.0"
   },
-  "exports": {},
-  "scripts": {},
   "dependencies": {
     "better-sqlite3": "^11.9.1",
     "ejs": "^3.1.10",
@@ -27,8 +24,10 @@
   "devDependencies": {
     "@types/ejs": "^3.1.5",
     "@types/express": "^5.0.1",
+    "@types/jest": "29.5.14",
     "dotenv": "16.4.7",
     "esbuild": "0.25.1",
+    "jest": "29.7.0",
     "nodemon": "3.1.9",
     "pino-pretty": "13.0.0"
   }

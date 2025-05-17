@@ -95,6 +95,8 @@ kob_resolve_app_dependencies() {
     simba_is_command_installed npm $NPM_VERSION
     simba_define_btime_envar NPM $command_path
 
+    # Node options
+    simba_define_btime_envar NODE_OPTIONS "$NODE_OPTIONS --experimental-vm-modules"
 
     # Resolve Sqlite3 database
     simba_define_ctime_envar SQLITE3_VERSION '3.40'
@@ -178,7 +180,6 @@ simba_cli_parse_options() {
                 simba_cli_parse_param "$@" || shift $?
                 simba_define_btime_envar datadir "$_param"
                 ;;
-
             --buildir | --buildir=*)
                 simba_cli_parse_param "$@" || shift $?
                 simba_define_btime_envar BUILDIR_ABS "$(realpath -m "$_param")"

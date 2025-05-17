@@ -1,6 +1,7 @@
 CREATE TABLE IF NOT EXISTS shape (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   description TEXT NULL,
   name TEXT NOT NULL UNIQUE
 );
@@ -8,6 +9,7 @@ CREATE TABLE IF NOT EXISTS shape (
 CREATE TABLE IF NOT EXISTS blueprint (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   name TEXT NOT NULL UNIQUE
 );
 
@@ -28,5 +30,5 @@ CREATE TABLE IF NOT EXISTS optimal_blueprint (
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_shape_name ON shape (name);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_blueprint_name ON blueprint (name);
-CREATE INDEX IF NOT EXISTS idx_blueprint_id on blueprint_shape (blueprint_id);
-CREATE INDEX IF NOT EXISTS idx_shape_id on blueprint_shape (shape_id);
+CREATE INDEX IF NOT EXISTS idx_bs_blueprint_id on blueprint_shape (blueprint_id);
+CREATE INDEX IF NOT EXISTS idx_bs_shape_id on blueprint_shape (shape_id);

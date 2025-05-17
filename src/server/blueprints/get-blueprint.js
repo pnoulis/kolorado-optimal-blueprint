@@ -1,10 +1,8 @@
-import { db } from "../db.js";
-
-const SQLGetBlueprint = db.prepare("SELECT * FROM blueprint WHERE id=?");
-const SQLGetBlueprintByName = db.prepare(
+const SQLGetBlueprint = globalThis.db.prepare("SELECT * FROM blueprint WHERE id=?");
+const SQLGetBlueprintByName = globalThis.db.prepare(
   "SELECT * FROM blueprint WHERE name=?",
 );
-const SQLGetBlueprintWithRelations = db.prepare(`
+const SQLGetBlueprintWithRelations = globalThis.db.prepare(`
 SELECT
    b.name AS blueprint_name,
    s.name AS shape_name,
@@ -20,7 +18,7 @@ JOIN
 WHERE
    b.id=?
 `);
-const SQLGetBlueprintByNameWithRelations = db.prepare(`
+const SQLGetBlueprintByNameWithRelations = globalThis.db.prepare(`
 SELECT
    b.name AS blueprint_name,
    s.name AS shape_name,

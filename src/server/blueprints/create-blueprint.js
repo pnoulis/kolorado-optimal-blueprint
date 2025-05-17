@@ -1,10 +1,9 @@
-import { db } from "../db.js";
 import { SQLGetBlueprintByName } from "./get-blueprint.js";
 
-const SQLCreateBlueprint = db.prepare(
+const SQLCreateBlueprint = globalThis.db.prepare(
   "INSERT INTO blueprint (name) VALUES (@name)",
 );
-const SQLCreateBlueprintShape = db.prepare(
+const SQLCreateBlueprintShape = globalThis.db.prepare(
   "INSERT INTO blueprint_shape (blueprint_id, shape_id, count) VALUES (@blueprint_id, @shape_id, @count)",
 );
 

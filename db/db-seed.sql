@@ -1,8 +1,8 @@
-INSERT INTO shape (name)
-VALUES ('Circle'),
-       ('Square'),
-       ('Triangle'),
-       ('Diamond');
+INSERT INTO shape (name, description)
+VALUES ('Circle','A big circle'),
+       ('Square','A big square'),
+       ('Triangle','A big triangle'),
+       ('Diamond','A big diamond');
 
 INSERT INTO blueprint (name)
 VALUES ('Blueprint A'),

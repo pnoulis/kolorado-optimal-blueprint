@@ -1,4 +1,3 @@
-import { db } from "../db.js";
 import {
   generate_optimal_blueprint,
   make_optimal_blueprint_fileparts,
@@ -8,7 +7,7 @@ import {
   formatBlueprintsTable,
 } from "../blueprints/get-blueprints.js";
 
-const SQLCreateOptimalBlueprint = db.prepare(
+const SQLCreateOptimalBlueprint = globalThis.db.prepare(
   "INSERT INTO optimal_blueprint (data) VALUES (?)",
 );
 

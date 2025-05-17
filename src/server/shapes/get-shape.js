@@ -1,7 +1,7 @@
-import { db } from "../db.js";
-
-const SQLGetShape = db.prepare("SELECT * FROM shape WHERE id=?");
-const SQLGetShapeByName = db.prepare("SELECT * FROM shape WHERE name=?");
+const SQLGetShape = globalThis.db.prepare("SELECT * FROM shape WHERE id=?");
+const SQLGetShapeByName = globalThis.db.prepare(
+  "SELECT * FROM shape WHERE name=?",
+);
 
 async function getShape(req, res) {
   const ctx = res.ctx;

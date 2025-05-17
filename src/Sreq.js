@@ -33,14 +33,15 @@ class Sreq {
   static get(url, { params, query, headers, json, form, timeout } = {}) {
     const _url = makeUrl.call(this, url, params);
     makeBody.call(this, "get", _url, { json, form });
+    const abortCountdown = startAbortCountdown(timeout || this?.timeout);
     return fetch(_url, {
       method: "get",
       headers: {
         Accept: "*/*",
         ...headers,
       },
-      signal: startAbortCountdown(timeout || this?.timeout),
-    });
+      signal: abortCountdown.signal,
+    }).finally(() => clearTimeout(abortCountdown.timeoutId));
   }
 
   static post(url, { params, query, headers, json, form, timeout } = {}) {
@@ -49,6 +50,7 @@ class Sreq {
       json,
       form,
     });
+    const abortCountdown = startAbortCountdown(timeout || this?.timeout);
     return fetch(_url, {
       method: "post",
       headers: {
@@ -56,9 +58,9 @@ class Sreq {
         ...headers,
         "Content-Type": contentType,
       },
-      signal: startAbortCountdown(timeout || this?.timeout),
+      signal: abortCountdown.signal,
       body,
-    });
+    }).finally(() => clearTimeout(abortCountdown.timeoutId));
   }
 
   static put(url, { params, query, headers, json, form, timeout } = {}) {
@@ -67,6 +69,7 @@ class Sreq {
       json,
       form,
     });
+    const abortCountdown = startAbortCountdown(timeout || this?.timeout);
     return fetch(_url, {
       method: "put",
       headers: {
@@ -74,9 +77,9 @@ class Sreq {
         ...headers,
         "Content-Type": contentType,
       },
-      signal: startAbortCountdown(timeout || this?.timeout),
+      signal: abortCountdown.signal,
       body,
-    });
+    }).finally(() => clearTimeout(abortCountdown.timeoutId));
   }
 
   static patch(url, { params, query, headers, json, form, timeout } = {}) {
@@ -85,6 +88,7 @@ class Sreq {
       json,
       form,
     });
+    const abortCountdown = startAbortCountdown(timeout || this?.timeout);
     return fetch(_url, {
       method: "put",
       headers: {
@@ -92,29 +96,33 @@ class Sreq {
         ...headers,
         "Content-Type": contentType,
       },
-      signal: startAbortCountdown(timeout || this?.timeout),
+      signal: abortCountdown.signal,
       body,
-    });
+    }).finally(() => clearTimeout(abortCountdown.timeoutId));
   }
 
   static delete(url, { params, query, headers, json, form, timeout } = {}) {
     const _url = makeUrl.call(this, url, params);
     makeBody.call(this, "delete", _url, { json, form });
+    const abortCountdown = startAbortCountdown(timeout || this?.timeout);
     return fetch(_url, {
       method: "delete",
       headers: {
         Accept: "*/*",
         ...headers,
       },
-      signal: startAbortCountdown(timeout || this?.timeout),
-    });
+      signal: abortCountdown.signal,
+    }).finally(() => abortCountdown.timeoutId);
   }
 }
 
 function startAbortCountdown(timeout) {
   const controller = new AbortController();
-  setTimeout(() => controller.abort(), timeout || REQUEST_TIMEOUT);
-  return controller.signal;
+  const timeoutId = setTimeout(
+    () => controller.abort(),
+    timeout || REQUEST_TIMEOUT,
+  );
+  return { timeoutId, signal: controller.signal };
 }
 
 function makeUrl(url, params) {

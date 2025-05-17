@@ -1,7 +1,7 @@
 import ejs from "ejs";
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { db } from "./db.js";
+import { db } from "../db.js";
 
 function createPage(template, destination, data) {
   template = readFileSync(template, { encoding: "utf8" });

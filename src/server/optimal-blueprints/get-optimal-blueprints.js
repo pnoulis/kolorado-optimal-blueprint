@@ -1,6 +1,4 @@
-import { db } from "../db.js";
-
-const SQLGetOptimalBlueprints = db.prepare(`
+const SQLGetOptimalBlueprints = globalThis.db.prepare(`
 SELECT * FROM optimal_blueprint ORDER BY created_at DESC LIMIT ? OFFSET ?
 `);
 

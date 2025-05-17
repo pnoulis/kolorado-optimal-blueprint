@@ -1,7 +1,8 @@
-import { db } from "../db.js";
 import { SQLGetShapeByName } from "./get-shape.js";
 
-const SQLCreateShape = db.prepare("INSERT INTO shape (name) VALUES (@name)");
+const SQLCreateShape = globalThis.db.prepare(
+  "INSERT INTO shape (name, description) VALUES (@name, @description)",
+);
 
 async function createShape(req, res) {
   const ctx = res.ctx;
@@ -20,12 +21,14 @@ async function createShape(req, res) {
     ctx.ok("Created shape", shape);
     res.status(201).json(ctx);
   } catch (err) {
-    if (err.code === "SQLITE_CONSTRAINT_UNIQUE") {
-      ctx.nok("Duplicate shape exists", err);
-      res.status(409).json(ctx);
-    } else {
-      ctx.nok("Failed to create shape", err);
-      res.status(500).json(ctx);
+    switch (err.code) {
+      case "SQLITE_CONSTRAINT_UNIQUE":
+        ctx.nok("Duplicate shape exists", err);
+        res.status(409).json(ctx);
+        break;
+      default:
+        ctx.nok("Failed to create shape", err);
+        res.status(500).json(ctx);
     }
   }
 }

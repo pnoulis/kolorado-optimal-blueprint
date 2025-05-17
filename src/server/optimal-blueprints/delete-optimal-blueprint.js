@@ -1,6 +1,6 @@
-import { db } from "../db.js";
-
-const SQLDeleteOptimalBlueprint = db.prepare('DELETE FROM optimal_blueprint WHERE id=?');
+const SQLDeleteOptimalBlueprint = globalThis.db.prepare(
+  "DELETE FROM optimal_blueprint WHERE id=?",
+);
 
 async function deleteOptimalBlueprint(req, res) {
   const ctx = res.ctx;
@@ -13,9 +13,9 @@ async function deleteOptimalBlueprint(req, res) {
     ctx.ok("Deleted optimal blueprint", req.params);
     res.status(200).json(ctx);
   } catch (err) {
-    ctx.nok('Failed to delete optimal blueprint', err);
+    ctx.nok("Failed to delete optimal blueprint", err);
     res.status(500).json(ctx);
   }
-};
+}
 
 export { deleteOptimalBlueprint, SQLDeleteOptimalBlueprint };

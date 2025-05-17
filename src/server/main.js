@@ -1,9 +1,9 @@
-import { debug } from "../debug.js";
+import "./globals.js";
 import express from "express";
 import bodyParser from "body-parser";
 import { router } from "./router.js";
 // import { api } from "./api.js";
-import { setupContext } from './middleware/setupContext.js';
+import { setupContext } from "./middleware/setupContext.js";
 import { timeResponse } from "./middleware/timeResponse.js";
 import { logResponse } from "./middleware/logResponse.js";
 import { notFound } from "./middleware/notFound.js";

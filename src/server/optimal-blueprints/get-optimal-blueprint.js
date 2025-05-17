@@ -1,6 +1,4 @@
-import { db } from "../db.js";
-
-const SQLGetOptimalBlueprint = db.prepare(
+const SQLGetOptimalBlueprint = globalThis.db.prepare(
   "SELECT * FROM optimal_blueprint WHERE id=?",
 );
 

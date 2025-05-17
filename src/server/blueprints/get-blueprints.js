@@ -1,7 +1,5 @@
-import { db } from "../db.js";
-
-const SQLGetBlueprints = db.prepare("SELECT * FROM blueprint");
-const SQLGetBlueprintsWithRelations = db.prepare(`
+const SQLGetBlueprints = globalThis.db.prepare("SELECT * FROM blueprint");
+const SQLGetBlueprintsWithRelations = globalThis.db.prepare(`
 SELECT
    b.name AS blueprint_name,
    b.created_at,
@@ -41,10 +39,10 @@ function formatBlueprintsTable(blueprintsTable) {
 
 async function getBlueprints(req, res) {
   const ctx = res.ctx;
-  const batchSize = req.query.size || -1;
-  const offset = req.query.page > 1 ? batchSize * (req.query.page - 1) : 0;
+  const limit = req.query.limit || -1;
+  const offset = req.query.offset > 1 ? limit * (req.query.offset - 1) : 0;
   try {
-    const blueprintsTable = SQLGetBlueprintsWithRelations.all(batchSize, offset);
+    const blueprintsTable = SQLGetBlueprintsWithRelations.all(limit, offset);
     ctx.ok("Retrieved blueprints", formatBlueprintsTable(blueprintsTable));
     res.status(200).json(ctx);
   } catch (err) {

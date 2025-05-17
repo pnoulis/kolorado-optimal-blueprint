@@ -114,6 +114,7 @@ M4_ENV_FLAGS	= __BUILD_TIME_ENV_M4_DEFINES__
 NODE						= __NODE__
 NPM							= __NPM__
 export NODE_ENV	= __NODE_ENV__
+export NODE_OPTIONS = __NODE_OPTIONS__
 
 ##################################################
 # Sqlite3
@@ -159,7 +160,7 @@ all: build
 ##################################################
 # Build
 ##################################################
-build: sqlite3-db api dotenv public
+build: sqlite3-db api dotenv
 
 public:
 	-$(MKDIR) -p $(BUILDIR)/public
@@ -182,6 +183,12 @@ dev: build
 	$(LOADENV); $(NPM) exec -- nodemon --watch $(SRCDIR) \
 	--exec "make api && node ./$(BUILDIR)/main.js" | \
 	$(NPM) exec -- pino-pretty -c
+
+##################################################
+# Test
+##################################################
+test:
+	$(NPM) exec jest -- --detectOpenHandles --testNamePattern='$(filter)'
 
 ##################################################
 # Release
